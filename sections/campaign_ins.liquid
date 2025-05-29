@@ -1,0 +1,1144 @@
+{%- liquid
+  assign sid = section.id
+  assign col = section.settings.col_pr
+  assign col_tb = section.settings.col_pr_tb
+  assign col_mb = ' pr_animated done' | prepend:section.settings.col_pr_mb
+  assign section_blocks = section.blocks
+  assign arr_img = section_blocks | where: "type", "img"
+  assign arr_campaign = section_blocks | where: "type", "Campaign"
+  assign open_link = section.settings.open_link
+  assign sett_equal = section.settings.use_eq_height
+  assign layout_des = section.settings.layout_des
+  if layout_des == '2'
+    assign mb_ = 'mb__20'
+  else
+    assign mb_ = 'mb__30'
+  endif
+  assign routes_local = routes.cart_url |split:'cart' | first 
+  assign swiper_mg = section.settings.swiper_mg | remove:' ' | split:','
+ -%}
+
+ {%- for i in (1..1) -%}
+  <div class="nt_se_{{sid}} campaign_ins_container campaign_ins_mobile">
+    <!-- campaign轮播图 -->
+    <div class="campaign_shop_wrap row ins_rounded_{{section.settings.rounded_ins}} ins_spaces_{{section.settings.space}} {{section.settings.image_size}} {{section.settings.image_ratio}} position_{{section.settings.image_position}}{% if sett_equal %} equal_nt{% endif %}{% if layout_des == '2' %} js_carousel nt_slider prev_next_{{section.settings.btn_color}} btn_owl_{{section.settings.btn_owl}} dot_owl_{{section.settings.dot_owl}} dot_color_{{section.settings.dot_color}} btn_vi_{{section.settings.btn_vi}}{% endif %}"{% if layout_des == '2' %} data-flickity='{"imagesLoaded": 0,"adaptiveHeight": 1, "contain": 1, "groupCells": "100%", "dragThreshold" : 5, "cellAlign": "left","wrapAround": {{section.settings.loop}},"prevNextButtons": {{section.settings.button}},"percentPosition": 1,"pageDots": {{section.settings.dot}}, "autoPlay" : {{ section.settings.au_time | times: 1000 }}, "pauseAutoPlayOnHover" : {{section.settings.au_hover}}, "rightToLeft": {{settings.use_rtl}} }'{% endif %}>
+      {%- if arr_campaign.size > 0 -%}{% assign offset = 0 -%}
+        {%- for bl in arr_campaign -%}{% assign check = true %}{% assign index = 0 %}{% assign offset = offset | plus:1 -%}
+            {%-   assign cp_bd_top = '' -%}
+            {%-   assign cp_bd_right = '' -%}
+            {%-   assign cp_bd_bottom = '' -%}
+            {%-   assign cp_bd_left = '' -%}
+            {% if bl.settings.cp_bd_top %}
+              {%-   assign cp_bd_top = 'cp_bd_top' -%}
+            {% endif %}
+            {% if bl.settings.cp_bd_right %}
+              {%-   assign cp_bd_right = 'cp_bd_right' -%}
+            {% endif %}
+            {% if bl.settings.cp_bd_bottom %}
+              {%-   assign cp_bd_bottom = 'cp_bd_bottom' -%}
+            {% endif %}
+            {% if bl.settings.cp_bd_left %}
+              {%-   assign cp_bd_left = 'cp_bd_left' -%}
+            {% endif %}
+            {%- if bl.type  == 'Campaign' -%}
+              <div id="pin_cp_{{bl.id}}" class="pin__wr_js campaign_item_box col_ins col-lg-{{col}} col-md-{{col_tb}}  {{cp_bd_top}} {{cp_bd_right}} {{cp_bd_bottom}} {{cp_bd_left}} col-{{col_mb}} item pr oh" {{ bl.shopify_attributes }}>
+                {%- assign cp_image_mb = bl.settings.mb_campaign_img %}{% assign cp_ratio = cp_image_mb.aspect_ratio |default:1.0 %}{% assign cp_url_mb = bl.settings.mb_campaign_url -%}
+                {% if cp_image_mb!= blank %}
+                  <a data-no-instant rel="nofollow" class="wrap_ins_img db pr oh" href="{{cp_url_mb}}" target="{{open_link}}">
+                    <div class="lazyload nt_bg_lz pr_lazy_img campaign_ins_img" data-bgset="{% if cp_image_mb != blank %}{{ cp_image_mb | img_url: '1x1' }}{% else %}https://placehold.jp/80/f5f5f5/999/1080x1080.png{% endif %}" data-ratio="{{cp_ratio}}" data-sizes="auto" style="padding-top:{{ 1 | divided_by: cp_ratio | times: 100}}%;"></div>
+                    <div class="campaign_name" style="color:{{bl.settings.mb_campaign_text_color}}">{{bl.settings.mb_campaign_text}}</div>
+                  </a>
+                {% endif %}
+              </div>
+            {%- endif -%}
+        {%- endfor -%}
+      {%- else -%}{%- render 'no-blocks' -%}{%- endif -%}
+    </div>
+
+    <!-- series轮播图  | section_blocks[0].settings.series_design_type-->
+    <div class="ins_shop_wrap row ins_rounded_{{section.settings.rounded_ins}} ins_spaces_{{section.settings.space}} {{section.settings.image_size}} {{section.settings.image_ratio}} position_{{section.settings.image_position}}{% if sett_equal %} equal_nt{% endif %}{% if layout_des == '2' %} js_carousel nt_slider prev_next_{{section.settings.btn_color}} btn_owl_{{section.settings.btn_owl}} dot_owl_{{section.settings.dot_owl}} dot_color_{{section.settings.dot_color}} btn_vi_{{section.settings.btn_vi}}{% endif %}"{% if layout_des == '2' %} data-flickity='{"imagesLoaded": 0,"adaptiveHeight": 1, "contain": 1, "groupCells": "100%", "dragThreshold" : 5, "cellAlign": "left","wrapAround": {{section.settings.loop}},"prevNextButtons": {{section.settings.button}},"percentPosition": 1,"pageDots": {{section.settings.dot}}, "autoPlay" : 0, "pauseAutoPlayOnHover" : {{section.settings.au_hover}}, "rightToLeft": {{settings.use_rtl}} }'{% endif %}>
+      {%- if arr_img.size > 0 -%}{% assign offset = 0 -%}
+        {%- for bl in arr_img -%}{% assign check = true %}{% assign index = 0 %}{% assign offset = offset | plus:1 -%}
+
+          {% if bl.type == 'img' %}
+              {%- assign imgStr = 'mb_image1,mb_image2,mb_image3,mb_image4' -%}
+              {%- assign urlStr = 'mb_image_url1,mb_image_url2,mb_image_url3,mb_image_url4' -%}
+              {%- assign imgText = 'mb_image_text1,mb_image_text2,mb_image_text3,mb_image_text4' -%}
+              {%- assign imgTextPosiStr = 'mb_image_text_posi1,mb_image_text_posi2,mb_image_text_posi3,mb_image_text_posi4' -%}
+              {%- assign imgTextColorStr = 'mb_image_text1_color,mb_image_text2_color,mb_image_text3_color,mb_image_text4_color' -%}
+              {%- assign imgArr = imgStr | split: ',' -%}
+              {%- assign urlArr = urlStr | split: ',' -%}
+              {%- assign imgTextArr = imgText | split: ',' -%}
+              {%- assign imgTextPosiArr = imgTextPosiStr | split: ',' -%}
+              {%- assign imgTextColorArr = imgTextColorStr | split: ',' -%}
+              {%- assign series_design_type = bl.settings.series_design_type -%}
+              {%-   assign se_bd_top = '' -%}
+              {%-   assign cp_bd_right = '' -%}
+              {%-   assign cp_bd_bottom = '' -%}
+              {%-   assign cp_bd_left = '' -%}
+              {% if bl.settings.se_bd_top %}
+                {%-   assign se_bd_top = 'se_bd_top' -%}
+              {% endif %}
+              {% if bl.settings.se_bd_right %}
+                {%-   assign se_bd_right = 'se_bd_right' -%}
+              {% endif %}
+              {% if bl.settings.se_bd_bottom %}
+                {%-   assign se_bd_bottom = 'se_bd_bottom' -%}
+              {% endif %}
+              {% if bl.settings.se_bd_left %}
+                {%-   assign se_bd_left = 'se_bd_left' -%}
+              {% endif %}
+              {% if bl.settings.series_type == 'main' %}
+                {%- assign series_item_name = bl.settings.menu_name | split: ',' -%}
+                <div id="pin_{{bl.id}}" class="pin__wr_js series_item_box col_ins col-lg-{{col}} col-md-{{col_tb}} col-{{col_mb}} {{se_bd_top}} {{se_bd_right}} {{se_bd_bottom}} {{se_bd_left}} item pr oh design_{{series_design_type}}" {{ bl.shopify_attributes }}>
+                  {%- if series_item_name != blank -%}
+                    {% for item in imgArr limit: series_design_type  %}
+                      {%- assign image_mb = bl.settings[imgArr[forloop.index0]]  %}
+                      {% assign ratio = image_mb.aspect_ratio |default:1.0 %}
+                      {% assign url_mb = bl.settings[urlArr[forloop.index0]] -%}
+                      {%- assign rich_text =  bl.settings.rich_text -%}
+                      {% comment %}
+                      <!-- 图片文字都没配，则显示默认图片，默认为第一张 -->
+                      {% endcomment %}
+                      {% if image_mb!= blank %}
+                        <a data-no-instant rel="nofollow" class="wrap_ins_img db pr oh " href="{{url_mb}}" target="{{open_link}}">
+                          <div class="lazyload nt_bg_lz pr_lazy_img" data-bgset="{% if image_mb != blank %}{{ image_mb | img_url: '1x1' }}{% else %}https://placehold.jp/80/f5f5f5/999/1080x1080.png{% endif %}" data-ratio="{{ratio}}" data-sizes="auto" style="padding-top:{{ 1 | divided_by: ratio | times: 100}}%;"></div>
+                          <span class="wrap_ins_txt {{bl.settings[imgTextPosiArr[forloop.index0]]}}" style="color: {{bl.settings[imgTextColorArr[forloop.index0]]}};">{{bl.settings[imgTextArr[forloop.index0]]}}</span>
+                        </a>
+                      {% elsif rich_text!=blank  %}
+                         {% comment %}
+                        <!-- 显示文案 -->
+                        {% endcomment %}
+                        <div class="wrap_ins_img" style="padding: 10px;">
+                          <div class="txt_box">{{rich_text}}</div>
+                        </div>
+                      {% else %}
+                        {% comment %}
+                        <!-- 显示默认 -->
+                        {% endcomment %}
+                        {%- assign image_mb = section_blocks[0].settings[imgArr[forloop.index0]] -%}
+                        {% assign ratio = image_mb.aspect_ratio |default:1.0 %}
+                        {% assign url_mb = bl.settings[urlArr[forloop.index0]] -%}
+                        {%- assign rich_text =  bl.settings.rich_text -%}
+                        <a data-no-instant rel="nofollow" class="wrap_ins_img db pr oh" href="{{url_mb}}" target="{{open_link}}">
+                          <div class="lazyload nt_bg_lz pr_lazy_img" data-bgset="{% if image_mb != blank %}{{ image_mb | img_url: '1x1' }}{% else %}https://placehold.jp/80/f5f5f5/999/1080x1080.png{% endif %}" data-ratio="{{ratio}}" data-sizes="auto" style="padding-top:{{ 1 | divided_by: ratio | times: 100}}%;"></div>
+                          <span class="wrap_ins_txt {{bl.settings[imgTextPosiArr[forloop.index0]]}}">{{bl.settings[imgTextArr[forloop.index0]]}}</span>
+                        </a>
+                      {% endif %}
+                    {% endfor %}
+                    <div class="series_item_name_box">
+                      {% for item in series_item_name %}
+                        {%- assign _url = bl.settings.url | split: ',' -%}
+                        <a href="{{_url[forloop.index0]}}" class="series_item_name">{{item}}</a>
+                      {% endfor %}
+                    </div>
+                  {%- else -%}
+                    <div class="wrap_ins_img db pr oh"><div class="lazyload nt_bg_lz pr_lazy_img" data-bgset="{% if image != blank %}{{ image | img_url: '1x1' }}{% else %}https://placehold.jp/80/f5f5f5/999/1080x1080.png{% endif %}" data-ratio="{{ratio}}" data-sizes="auto" style="padding-top:{{ 1 | divided_by: ratio | times: 100}}%;"></div></div>
+                  {%- endif -%}
+                </div>
+              {% endif %}
+            {% endif %}
+
+        {%- endfor -%}
+      {%- else -%}{%- render 'no-blocks' -%}{%- endif -%}
+    </div>
+  </div>
+{%- endfor -%}
+
+{%- render 'section_css' -%}
+{%- unless sett_equal %}{% style -%}
+  {%- for bl in arr_img -%}{% assign image = bl.settings.image %}{% assign ratio = image.aspect_ratio |default:1.0 -%}
+  {%- endfor -%}
+{%- endstyle %}{% endunless -%}
+
+<style>
+  .se_bd_top,.cp_bd_top{
+    border-top: 1px solid #b5b5b5;
+  }
+  .se_bd_left a.wrap_ins_img,.cp_bd_left a.wrap_ins_img {
+    border-left: 1px solid #b5b5b5;
+  }
+  .se_bd_bottom a.wrap_ins_img,.cp_bd_bottom a.wrap_ins_img  {
+    border-bottom: 1px solid #b5b5b5;
+  }
+  .se_bd_right a.wrap_ins_img,.cp_bd_right a.wrap_ins_img  {
+    border-right: 1px solid #b5b5b5;
+  }
+  .se_bd_right a.wrap_ins_img:nth-child(odd){
+    border-right:none
+  }
+  .design_1.se_bd_right a.wrap_ins_img:nth-child(odd),
+  .design_1.cp_bd_right a.wrap_ins_img:nth-child(odd){
+    border-right: 1px solid #b5b5b5;
+  }
+  .campaign_ins_mobile{
+    display: none;
+  }
+  .campaign_ins_container img{
+    width: 100%;
+    height: 100%;
+  }
+  .campaign_ins_warp{
+    width: 100%;
+    position: relative;
+  }
+  .campaign_name{
+    position: absolute;
+    text-align: center;
+    width: 100%;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    font-size: 25px;
+    font-family: 'Favorit Std Bold Extended' !important;
+    line-height: 120%;
+  }
+  @media (max-width: 1024px) {
+    .campaign_ins_mobile{
+      display: block;
+    }
+  }
+  .series_item_box{
+    display: flex;
+    flex-wrap: wrap;
+  }
+  .series_item_box .wrap_ins_img{
+    flex: 1 0 50%;
+    max-width: 100%;
+    position: relative;
+  }
+  .series_item_box .wrap_ins_img .txt_box{
+    text-align: center;
+    /* display: flex; */
+    width: 100%;
+    /* justify-content: center;
+    align-items: center; */
+  }
+  .series_item_box .wrap_ins_img .txt_box>p{
+    margin: 0;
+  }
+  .series_item_box .wrap_ins_txt{
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    top: 0;
+    left: 0;
+		font-family: HelveticaNeueLTPro-Roman !important;
+  }
+  .series_item_box .wrap_ins_txt.right{
+    transform-origin: right 0px;
+    transform: rotate(-90deg) translateY(-100%);
+  }
+  .series_item_box .wrap_ins_txt.left{
+    transform-origin: left 0px;
+    transform: rotate(90deg) translateY(-100%);
+  }
+  .series_item_box .wrap_ins_txt.bottom{
+    top: 100%;
+    left: 0;
+    transform: translateY(-100%);
+  }
+  .series_item_box .series_item_name_box{
+    display: flex;
+    justify-content: center;
+    width: 100%;
+  }
+  .series_item_box .series_item_name{
+    font-size: 14px;
+    margin: 0 10px;
+    position: relative;
+    color: #000;
+    font-weight: bold;
+    text-transform: uppercase;
+  }
+  .series_item_box .series_item_name:nth-child(even)::after{
+    content: '';
+    height: 10px;
+    position: absolute;
+    width: 1.5px;
+    left: -11px;
+    top: 6px;
+    display: block;
+    background: #000;
+    transform: rotate(25deg);
+    font-family: HelveticaNeueLTStd-BdCn !important;
+  }
+  .series_item_box .series_item_name.ios:nth-child(even)::after{
+    top: 4px;
+  }
+  .series_item_box .series_item_name::before{
+    content: '';
+    display: block;
+    width: 0%;
+    height: 1px;
+    position: absolute;
+    bottom: 2px;
+    left: 50%;
+    background: #000;
+    transform: translateX(-50%);
+  }
+  .series_item_box.is-selected .series_item_name::before{
+    width: 100%;
+    height: 1px;
+    transition: all .5s ease .2s;
+  }
+  .campaign_ins_container .flickity-page-dots .dot{
+    margin-top: 10px;
+  }
+  .campaign_ins_container .series_item_box {
+    margin-top: {{swiper_mg[0]}} ;
+    margin-right: {{swiper_mg[1]}} ;
+    margin-left: {{swiper_mg[3]}} ;
+  }
+  .campaign_ins_container .series_item_name_box{
+    margin-top: {{swiper_mg[2]}} ;
+  }
+  .campaign_shop_wrap .flickity-page-dots{
+    margin-top: -50px;
+  }
+  @media (max-width: 1024px){
+     .campaign_ins_container .dot_owl_1 .flickity-page-dots .dot,
+      .campaign_ins_container .type_slideshow .dot_owl_1 .flickity-page-dots .dot{
+        width: 6px;
+        height: 6px;
+      }
+      .campaign_ins_container .flickity-page-dots .dot{
+        margin: 8px 2px 0 ;
+        border: none;
+      }
+      .ins_shop_wrap .flickity-page-dots .dot{
+        border: none;
+      }
+      .campaign_ins_container .dot_owl_1 .flickity-page-dots .dot,
+      .ins_shop_wrap .flickity-page-dots .dot{
+        width: 6px;
+        height: 6px;
+        border: none;
+        margin: 14px 2px 0 ;
+        background: #d7d7d7;
+      }
+      .campaign_ins_container .dot_owl_1 .flickity-page-dots .dot.is-selected,
+      .ins_shop_wrap .flickity-page-dots .dot.is-selected{
+        background: #000;
+      }
+      .type_instagram_shop {
+        letter-spacing: -0.5px;
+      }
+      .campaign_ins_container .row.ins_spaces_6{
+        margin: 0;
+      }
+      .campaign_ins_container .pr_lazy_img{
+        transform: none;
+      }
+	 }
+</style>
+
+<script>
+  var u = navigator.userAgent;
+  var isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/);
+  var isAndroid = u.indexOf('Android') > -1 || u.indexOf('Adr') > -1; //android终端
+  if(isiOS){
+    $('.series_item_box .series_item_name').addClass('ios')
+  }
+</script>
+
+{%- schema -%}
+  {
+    "name": "Campaign Instagram",
+    "class": "nt_section type_instagram_shop type_pin_owl",
+    "max_blocks": 15,
+    "settings": [
+      {
+        "type": "text","id": "swiper_mg","label": "Swiper Margin","default": "0px,0px,0px,0px",
+        "info":"Margin top, Margin right, Margin bottom, Margin left.",
+        "placeholder": "0px,0px,0px,0px"
+      },
+      {
+        "type": "header",
+        "content": "== General Settings"
+      },
+      {
+        "type": "select",
+        "id": "layout_des",
+        "options": [
+          {
+            "value": "1",
+            "label": "Grid"
+          },
+          {
+            "value": "2",
+            "label": "Slider"
+          }
+        ],
+        "label": "Layout design",
+        "default": "2"
+      },
+      {
+        "type": "select",
+        "id": "open_link",
+        "options": [
+          {
+            "value": "_self",
+            "label": "Current window (_self)"
+          },
+         {
+            "value": "_blank",
+            "label": "New window (_blank)"
+          }
+        ],
+        "label": "Open link in",
+        "default": "_self"
+      },
+      {
+       "type": "select",
+       "id": "space",
+       "options": [
+         {
+           "value": "15",
+           "label": "15"
+         },
+         {
+           "value": "10",
+           "label": "10"
+         },
+         {
+           "value": "6",
+           "label": "6"
+         },
+         {
+           "value": "3",
+           "label": "3"
+         },
+         {
+           "value": "2",
+           "label": "2"
+         },
+         {
+           "value": "0",
+           "label": "0"
+         }
+       ],
+       "label": "spaces between photos",
+       "default": "0" 
+      },
+      {
+        "type": "select",
+        "id": "rounded_ins",
+        "label": "Rounded corners for images",
+        "default": "0",
+        "options": [
+          {
+            "value": "0",
+            "label": "Disable"
+          },
+          {
+            "value": "1",
+            "label": "Style 1"
+          },
+          {
+            "value": "2",
+            "label": "Style 2"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "col_pr",
+        "label": "Photos per row",
+        "info": "How many photos you want to show per row",
+        "default": "2",
+        "options": [
+          {
+            "value": "6",
+            "label": "2"
+          },
+          {
+            "value": "4",
+            "label": "3"
+          },
+          {
+            "value": "3",
+            "label": "4"
+          },
+          {
+            "value": "15",
+            "label": "5"
+          },
+          {
+            "value": "2",
+            "label": "6"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "col_pr_tb",
+        "label": "Photos per row Tablet",
+        "default": "3",
+        "options": [
+          {
+            "value": "12",
+            "label": "1"
+          },
+          {
+            "value": "6",
+            "label": "2"
+          },
+          {
+            "value": "4",
+            "label": "3"
+          },
+          {
+            "value": "3",
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "col_pr_mb",
+        "label": "Photos per row Mobile",
+        "default": "6",
+        "options": [
+          {
+            "value": "12",
+            "label": "1"
+          },
+          {
+            "value": "6",
+            "label": "2"
+          }
+        ]
+      },
+      {
+        "type": "header",
+        "content": "== Slider Settings"
+      },
+      {
+        "type": "checkbox",
+        "id": "loop",
+        "label": "Use Loop?",
+        "info": "At the end of cells, wrap-around to the other end for infinite scrolling.",
+        "default": false
+      },
+      {
+        "type": "range",
+        "id": "au_time",
+        "min": 0,
+        "max": 30,
+        "step": 0.5,
+        "label": "Autoplay Speed in second.",
+        "info": "Set is '0' to disable autoplay.",
+        "unit": "sec",
+        "default": 0
+      },
+      {
+        "type": "checkbox",
+        "id": "au_hover",
+        "label": "Pause Autoplay On Hover?",
+        "info": "Auto-playing will pause when the user hovers over the carousel.",
+        "default": true
+      },
+      {
+        "type": "header",
+        "content": "== Prev Next Button, Page Dot Settings"
+      },
+      {
+        "type": "paragraph",
+        "content": "—————————————————"
+      },
+      {
+        "type": "paragraph",
+        "content": "Prev Next Button:"
+      },
+      {
+        "type": "checkbox",
+        "id": "button",
+        "label": "Enable Prev Next Button?",
+        "info": "Creates and enables previous & next buttons.",
+        "default": true
+      },
+      {
+        "type": "select",
+        "id": "btn_vi",
+        "label": "Visible:",
+        "default": "1",
+        "options": [
+          {
+            "value": "1",
+            "label": "always"
+          },
+          {
+            "value": "2",
+            "label": "Only hover"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "btn_owl",
+        "label": "Style",
+        "default": "1",
+        "options": [
+          {
+            "value": "1",
+            "label": "Style 1"
+          },
+          {
+            "value": "2",
+            "label": "Style 2"
+          },
+          {
+            "value": "3",
+            "label": "Style 3"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "btn_color",
+        "label": "Color",
+        "default": "0",
+        "options": [
+          {
+            "value": "0",
+            "label": "Transparent"
+          },
+          {
+            "value": "1",
+            "label": "Gray"
+          },
+          {
+            "value": "2",
+            "label": "White"
+          },
+          {
+            "value": "3",
+            "label": "Primary"
+          }
+        ]
+      },
+      {
+        "type": "paragraph",
+        "content": "—————————————————"
+      },
+      {
+        "type": "paragraph",
+        "content": "Page Dot:"
+      },
+      {
+        "type": "checkbox",
+        "id": "dot",
+        "label": "Enable Page Dot?",
+        "info": "Creates and enables page dots.",
+        "default": true
+      },
+      {
+        "type": "select",
+        "id": "dot_owl",
+        "label": "Style",
+        "default": "1",
+        "options": [
+          {
+            "value": "1",
+            "label": "Style 1"
+          },
+          {
+            "value": "2",
+            "label": "Style 2"
+          },
+          {
+            "value": "3",
+            "label": "Style 3"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "dot_color",
+        "label": "Color",
+        "default": "1",
+        "options": [
+          {
+            "value": "1",
+            "label": "Dark"
+          },
+          {
+            "value": "2",
+            "label": "Light"
+          },
+          {
+            "value": "3",
+            "label": "Primary"
+          }
+        ]
+      },
+      {
+        "type": "header",
+        "content": "== Design Image"
+      },
+      {
+        "type": "checkbox",
+        "id": "use_eq_height",
+        "label": "Use equal height images?",
+        "default": true
+      },
+      {
+        "type": "select",
+        "id": "image_ratio",
+        "label": "Aspect Ratio",
+        "default": "ratio1_1",
+        "info": "Aspect Ratio Custom will settings in General panel.",
+        "options": [
+          {
+            "group": "Landscape",
+            "value": "ratio2_1",
+            "label": "2:1"
+          },
+          {
+            "group": "Landscape",
+            "value": "ratio16_9",
+            "label": "16:9"
+          },
+          {
+            "group": "Landscape",
+            "value": "ratio8_5",
+            "label": "8:5"
+          },
+          {
+            "group": "Landscape",
+            "value": "ratio3_2",
+            "label": "3:2"
+          },
+          {
+            "group": "Landscape",
+            "value": "ratio4_3",
+            "label": "4:3"
+          },
+          {
+            "group": "Landscape",
+            "value": "ratio_nt",
+            "label": "Ratio ASOS"
+          },
+          {
+            "group": "Squared",
+            "value": "ratio1_1",
+            "label": "1:1"
+          },
+          {
+            "group": "Portrait",
+            "value": "ratio2_3",
+            "label": "2:3"
+          },
+          {
+            "group": "Portrait",
+            "value": "ratio1_2",
+            "label": "1:2"
+          },
+          {
+            "group": "Custom",
+            "value": "ratio_cus1",
+            "label": "Ratio Custom 1"
+          },
+          {
+            "group": "Custom",
+            "value": "ratio_cus2",
+            "label": "Ratio Custom 2"
+          },
+          {
+            "group": "Custom",
+            "value": "ratio_cus3",
+            "label": "Ratio Custom 3"
+          },
+          {
+            "group": "Custom",
+            "value": "ratio_cus4",
+            "label": "Ratio Custom 4"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "image_size",
+        "label": "Image Size",
+        "default": "nt_cover",
+        "options": [
+          {
+            "value": "nt_cover",
+            "label": "Full"
+          },
+          {
+            "value": "nt_contain",
+            "label": "Auto"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "image_position",
+        "info": "The first value is the horizontal position and the second value is the vertical.",
+        "options": [
+          {
+            "value": "default",
+            "label": "Default"
+          },
+          {
+            "value": "1",
+            "label": "Left Top"
+          },
+          {
+            "value": "2",
+            "label": "Left Center"
+          },
+          {
+            "value": "3",
+            "label": "Left Bottom"
+          },
+          {
+            "value": "4",
+            "label": "Right Top"
+          },
+          {
+            "value": "5",
+            "label": "Right Center"
+          },
+          {
+            "value": "6",
+            "label": "Right Bottom"
+          },
+          {
+            "value": "7",
+            "label": "Center Top"
+          },
+          {
+            "value": "8",
+            "label": "Center Center"
+          },
+          {
+            "value": "9",
+            "label": "Center Bottom"
+          }
+        ],
+        "label": "Image Position",
+        "default": "8"
+      },
+      {
+        "type": "header",
+        "content": "== Design Options"
+      },
+      {
+        "type": "checkbox",
+        "id": "hidden",
+        "label": "Hidden Section?",
+        "default": false,
+        "info": "Hidden section on home page, but still visible on blog posts, product page, pages as shortcode."
+      },
+      {
+        "type": "checkbox",
+        "id": "cp_code",
+        "label": "Show copy shortcode?",
+        "default": false,
+        "info": "Copy shortcode only show on admin editor."
+      },
+      {
+        "type": "select",
+        "id": "layout",
+        "default": "nt_full",
+        "options": [
+         {
+            "value": "container",
+            "label": "Container"
+         },
+         {
+            "value": "nt_full",
+            "label": "Full Width"
+          }
+        ],
+        "label": "Layout"
+      },
+      {
+        "type": "color",
+        "id": "cl_bg",
+        "label": "Background color",
+        "default": "#fff"
+      },
+      {
+        "type": "text",
+        "id": "mg",
+        "label": "Margin",
+        "info":"Margin top, margin right, margin bottom, margin left. If you not use to blank",
+        "default": "50px,,50px,",
+        "placeholder": "50px,,50px,"
+      },
+      {
+        "type": "text",
+        "id": "pd",
+        "label": "Padding",
+        "info":"Padding top, padding right, padding bottom, padding left. If you not use to blank",
+        "placeholder": "50px,,50px,"
+      },
+     {
+        "type": "header",
+        "content": "== Design Mobile Options"
+      },
+      {
+        "type": "text",
+        "id": "mg_mb",
+        "label": "Margin",
+        "placeholder": "50px,,50px,"
+      },
+      {
+        "type": "text",
+        "id": "pd_mb",
+        "label": "Padding",
+        "placeholder": "50px,,50px,"
+      }
+    ],
+    "blocks": [
+      {
+        "type": "Campaign",
+        "name": "== Campaign Item",
+        "settings": [
+          {
+            "type": "image_picker","id": "mb_campaign_img","label": "Campaign Image"
+          },{
+            "type": "url","id": "mb_campaign_url","label": "Campaign Image Link"
+          },{
+            "type": "text","id": "mb_campaign_text","label": "Campaign Image Text"
+          },{
+            "type": "color","id": "mb_campaign_text_color", "label": "Campaign Image Text Color","default": "#000"
+          },{
+            "type": "header",
+            "content": "== Campaign Item Border Settings"
+          },
+          {
+            "type": "checkbox",
+            "id": "cp_bd_top",
+            "label": "Border Top?",
+            "default": false
+          },
+          {
+            "type": "checkbox",
+            "id": "cp_bd_right",
+            "label": "Border Right?",
+            "default": false
+          },
+          {
+            "type": "checkbox",
+            "id": "cp_bd_bottom",
+            "label": "Border Bottom?",
+            "default": false
+          },
+          {
+            "type": "checkbox",
+            "id": "cp_bd_left",
+            "label": "Border Left?",
+            "default": false
+          }
+        ]
+      },
+      {
+        "type": "img",
+        "name": "== Series Parent",
+        "limit": 12,
+        "settings": [
+          {
+            "type": "select",
+            "id": "series_type",
+            "label": "Series Type",
+            "options": [
+              {
+                "value": "main",
+                "label": "Main"
+              },{
+                "value": "sub",
+                "label": "Sub"
+              }
+            ]
+          },
+          {
+            "type": "text","id": "menu_name","label": "Series Name"
+          },
+          {
+            "type": "textarea","id": "url","label": "Link (optional)"
+          },
+          {
+            "type": "richtext",
+            "id": "rich_text",
+            "label": "richtext"
+          },
+          {
+            "type": "select",
+            "id": "series_design_type",
+            "label": "Series Image Design Type",
+            "default": "4",
+            "options": [
+              {
+                "value": "1",
+                "label": "Design 1"
+              },{
+                "value": "2",
+                "label": "Design 2"
+              },{
+                "value": "4",
+                "label": "Design 3"
+              }
+            ]
+          },
+          {"type": "header","content": "========Series Image Item========","info": "Series Image Item setting"},
+          {
+            "type": "image_picker","id": "mb_image1","label": "Image1"
+          },{
+            "type": "url","id": "mb_image_url1","label": "Image1 Link1"
+          },{
+            "type": "text","id": "mb_image_text1","label": "Image1 Text"
+          },{
+            "type": "color","id": "mb_image_text1_color", "label": "Image1 Text Color","default": "#000"
+          },{
+            "type": "select",
+            "id": "mb_image_text_posi1",
+            "label": "Image1 Text position",
+            "default": "top",
+            "options": [
+              {
+                "value": "top",
+                "label": "Top"
+              },{
+                "value": "right",
+                "label": "Right"
+              },{
+                "value": "bottom",
+                "label": "Bottom"
+              },{
+                "value": "left",
+                "label": "Left"
+              }
+            ]
+          },
+          {"type": "header","content": "-------------------------------"},
+          {
+            "type": "image_picker","id": "mb_image2","label": "Image2"
+          },{
+            "type": "url","id": "mb_image_url2","label": "Image2 Link"
+          },{
+            "type": "text","id": "mb_image_text2","label": "Image2 text"
+          },{
+            "type": "color","id": "mb_image_text2_color", "label": "Image2 Text Color","default": "#000"
+          },{
+            "type": "select",
+            "id": "mb_image_text_posi2",
+            "label": "Image2 Text position",
+            "default": "top",
+            "options": [
+              {
+                "value": "top",
+                "label": "Top"
+              },{
+                "value": "right",
+                "label": "Right"
+              },{
+                "value": "bottom",
+                "label": "Bottom"
+              },{
+                "value": "left",
+                "label": "Left"
+              }
+            ]
+          },
+          {"type": "header","content": "-------------------------------"},
+          {
+            "type": "image_picker","id": "mb_image3","label": "Image3"
+          },{
+            "type": "url","id": "mb_image_url3","label": "Image3 Link"
+          },{
+            "type": "text","id": "mb_image_text3","label": "Image3 text"
+          },{
+            "type": "color","id": "mb_image_text3_color", "label": "Image3 Text Color","default": "#000"
+          },{
+            "type": "select",
+            "id": "mb_image_text_posi3",
+            "label": "Image3 Text position",
+            "default": "top",
+            "options": [
+              {
+                "value": "top",
+                "label": "Top"
+              },{
+                "value": "right",
+                "label": "Right"
+              },{
+                "value": "bottom",
+                "label": "Bottom"
+              },{
+                "value": "left",
+                "label": "Left"
+              }
+            ]
+          },
+          {"type": "header","content": "-------------------------------"},
+          {
+            "type": "image_picker","id": "mb_image4","label": "Image4"
+          },{
+            "type": "url","id": "mb_image_url4","label": "Image4 Link"
+          },{
+            "type": "text","id": "mb_image_text4","label": "Image4 text"
+          },{
+            "type": "color","id": "mb_image_text4_color", "label": "Image4 Text Color","default": "#000"
+          },{
+            "type": "select",
+            "id": "mb_image_text_posi4",
+            "label": "Image Text position",
+            "default": "top",
+            "options": [
+              {
+                "value": "top",
+                "label": "Top"
+              },{
+                "value": "right",
+                "label": "Right"
+              },{
+                "value": "bottom",
+                "label": "Bottom"
+              },{
+                "value": "left",
+                "label": "Left"
+              }
+            ]
+          },{
+            "type": "header",
+            "content": "== Series Item Border Settings"
+          },
+          {
+            "type": "checkbox",
+            "id": "se_bd_top",
+            "label": "Border Top?",
+            "default": false
+          },
+          {
+            "type": "checkbox",
+            "id": "se_bd_right",
+            "label": "Border Right?",
+            "default": false
+          },
+          {
+            "type": "checkbox",
+            "id": "se_bd_bottom",
+            "label": "Border Bottom?",
+            "default": false
+          },
+          {
+            "type": "checkbox",
+            "id": "se_bd_left",
+            "label": "Border Left?",
+            "default": false
+          }
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "Campaign Instagram"
+      }
+    ]
+  }
+{% endschema %}

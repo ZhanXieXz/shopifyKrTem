@@ -1,0 +1,619 @@
+{%- liquid
+  assign sid = section.id
+%}
+
+<div class="page_{{sid}} store_container">
+  {%- for block in section.blocks -%}
+    {%- assign storeItem = block.settings -%}
+    {%- assign image = storeItem.image -%}
+    <div class="store_item nt_store_{{block.id}}" >
+      <div class="nt_bg_lz lazyload item__position store-image" data-bgset="{{ image | img_url: '1x1' }}" data-ratio="{{image.aspect_ratio}}" data-sizes="auto" data-parent-fit="cover"{% if ck %} style=""{% endif %}></div>
+      <div class="store-tile__city">{{storeItem.title}}</div>
+      <div class="store-tile__name">{{storeItem.title_2}}</div>
+      <div class="description_box" style="display: none;">
+        <div class="swiper_container">
+          <div class="swiper_container_warp">
+            {%- if storeItem.info_image1 != blank -%}
+              <div class="nt_bg_lz lazyload item__position store-desc-image" data-bgset="{{ storeItem.info_image1 | img_url: '1x1' }}" data-ratio="{{storeItem.info_image1.aspect_ratio}}" data-sizes="auto" data-parent-fit="cover"{% if ck %} style=""{% endif %}></div>
+            {% endif %}
+            {%- if storeItem.info_image2 != blank -%}
+            <div class="nt_bg_lz lazyload item__position store-desc-image" data-bgset="{{ storeItem.info_image2 | img_url: '1x1' }}" data-ratio="{{storeItem.info_image2.aspect_ratio}}" data-sizes="auto" data-parent-fit="cover"{% if ck %} style=""{% endif %}></div>
+            {% endif %}
+            {%- if storeItem.info_image3 != blank -%}
+            <div class="nt_bg_lz lazyload item__position store-desc-image" data-bgset="{{ storeItem.info_image3 | img_url: '1x1' }}" data-ratio="{{storeItem.info_image3.aspect_ratio}}" data-sizes="auto" data-parent-fit="cover"{% if ck %} style=""{% endif %}></div>
+            {% endif %}
+            {%- if storeItem.info_image4 != blank -%}
+            <div class="nt_bg_lz lazyload item__position store-desc-image" data-bgset="{{ storeItem.info_image4 | img_url: '1x1' }}" data-ratio="{{storeItem.info_image4.aspect_ratio}}" data-sizes="auto" data-parent-fit="cover"{% if ck %} style=""{% endif %}></div>
+            {% endif %}
+          </div>
+          <button class="flickity-button flickity-prev-next-button previous" type="button"><svg class="flickity-button-icon" viewBox="0 0 100 100"><path d="M 10,50 L 60,100 L 70,90 L 30,50  L 70,10 L 60,0 Z" class="arrow" transform="translate(100, 100) rotate(180) "></path></svg></button>
+          <button class="flickity-button flickity-prev-next-button next" type="button" ><svg class="flickity-button-icon" viewBox="0 0 100 100"><path d="M 10,50 L 60,100 L 70,90 L 30,50  L 70,10 L 60,0 Z" class="arrow" transform="translate(100, 100) rotate(180) "></path></svg></button>
+        </div>
+
+        <div class="description_box_img_cont">
+          {%- if storeItem.info_image1 != blank -%}
+            <div class="nt_bg_lz lazyload item__position store-desc-image" data-bgset="{{ storeItem.info_image1 | img_url: '1x1' }}" data-ratio="{{storeItem.info_image1.aspect_ratio}}" data-sizes="auto" data-parent-fit="cover"{% if ck %} style=""{% endif %}></div>
+          {% endif %}
+          {%- if storeItem.info_image2 != blank -%}
+          <div class="nt_bg_lz lazyload item__position store-desc-image" data-bgset="{{ storeItem.info_image2 | img_url: '1x1' }}" data-ratio="{{storeItem.info_image2.aspect_ratio}}" data-sizes="auto" data-parent-fit="cover"{% if ck %} style=""{% endif %}></div>
+          {% endif %}
+          {%- if storeItem.info_image3 != blank -%}
+          <div class="nt_bg_lz lazyload item__position store-desc-image" data-bgset="{{ storeItem.info_image3 | img_url: '1x1' }}" data-ratio="{{storeItem.info_image3.aspect_ratio}}" data-sizes="auto" data-parent-fit="cover"{% if ck %} style=""{% endif %}></div>
+          {% endif %}
+          {%- if storeItem.info_image4 != blank -%}
+          <div class="nt_bg_lz lazyload item__position store-desc-image" data-bgset="{{ storeItem.info_image4 | img_url: '1x1' }}" data-ratio="{{storeItem.info_image4.aspect_ratio}}" data-sizes="auto" data-parent-fit="cover"{% if ck %} style=""{% endif %}></div>
+          {% endif %}
+        </div>
+        <div class="desc_text_box">
+          <div class="street-detail-box">
+            <div class="descItem">
+              <div class="street-name">Address:</div>
+              <div class="street-detail-item">
+                {{storeItem.address |newline_to_br}}
+              </div>
+            </div>
+            <div class="descItem">
+              <div class="street-name">Tel:</div>
+              <div class="street-detail-item">
+                {{storeItem.tel |newline_to_br}}
+              </div>
+            </div>
+            <p class="border"></p>
+            <div class="descItem">
+              <div class="street-name">Opening Hour:</div>
+              <div class="street-detail-item">{{storeItem.open_hour |newline_to_br }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  {%- endfor -%}
+  <div class="description_show_box" style="display: none;">
+    <div class="store-details__close"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="x_svg__feather x_svg__feather-x everlane-icon"><path d="M18 6L6 18M6 6l12 12"></path></svg></div>
+    <div class="container"></div>
+  </div>
+
+</div>
+
+<script src="{{'jquery-3.4.1.min.js'|asset_url}}"></script>
+<script>
+  $(function(){
+    let index = null
+    $('.store_item').click(function(){
+      $('.storeActive').removeClass('storeActive')
+      $(this).addClass('storeActive')
+      index = $('.store_item').index(this)
+      let detail = $(this).find('.description_box').clone()
+      $('.description_show_box').show()
+      $('.description_show_box').find('.container').empty().html(detail).find('.description_box').show()
+
+      let rowNum = window.innerWidth<=768 ? 3: 3
+      // 在此后插入店铺详情
+      if (index<$('.store_item').length-1) {
+        if (index%rowNum==0) {
+          index = index + (rowNum-1)
+        } else if (index%rowNum==1) {
+          index = index + (rowNum-2)
+        } else if (index%rowNum==2) {
+          index = index +  (rowNum-3)
+        }
+      }
+      num = 0
+      console.log('轮播图重置');
+      $('.description_show_box').removeClass('hideNextBtn').addClass('hidePrevBtn')
+      let result = $('.description_show_box')
+      $('.store_item').eq(index).after(result)
+    })
+    
+    $('.store_container .store-details__close').click(function(){
+      $('.description_show_box').hide()
+      $('.storeActive').removeClass('storeActive')
+    })
+    
+    if(window.innerWidth<768){
+    	setTimeout(function(){
+          $(".store_item").eq(0).trigger("click");
+      },0)
+    }
+    
+
+    let num = 0
+    $('.page_stores').on('click','.flickity-prev-next-button.next',function(){
+      let _w = $('.description_show_box').find('.description_box').width(),
+          _swl = $('.description_show_box').find('.swiper_container_warp').find('.store-desc-image').length
+      if (num<_swl-1) {
+        // 可以点击下一页
+        num ++ 
+        let _scroll = num * _w
+        $('.swiper_container_warp').scrollLeft(_scroll)
+      }
+      if (num>=_swl-1) {
+        $('.description_show_box').addClass('hideNextBtn').removeClass('hidePrevBtn')
+      }else{
+        $('.description_show_box').removeClass('hideNextBtn').removeClass('hidePrevBtn')
+      }
+    });
+    $('.page_stores').on('click','.flickity-prev-next-button.previous',function(){
+      let _w = $('.description_show_box').find('.description_box').width(),
+          _swl = $('.description_show_box').find('.swiper_container_warp').find('.store-desc-image').length
+      if (num>0) {
+        num -- 
+        let _scroll = num * _w
+        $('.swiper_container_warp').scrollLeft(_scroll)
+      }
+
+      if (num<=0) {
+        $('.description_show_box').addClass('hidePrevBtn').removeClass('hideNextBtn')
+      }else{
+        $('.description_show_box').addClass('hideNextBtn').removeClass('hideNextBtn')
+      }
+    });
+  })
+</script>
+
+<style>
+  #shopify-section-pages_heading .page_head_pages_heading:before{
+  	background: #fff;
+  }
+  #shopify-section-pages_heading .page_head_pages_heading h1{
+  	color: #333;
+    text-transform: uppercase;
+    font-size: 40px;
+    line-height: 40px;
+/*     font-family: 'Neue Montreal Bold' !important; */
+  }
+  .hidePrevBtn .flickity-prev-next-button.previous{
+    display: none;
+  }
+  .hideNextBtn .flickity-prev-next-button.next{
+    display: none;
+  }
+  @media (min-width: 1230px){
+    .container{
+    	max-width: 100%
+    }
+  }
+  .store_container{
+    display: flex;
+    flex-wrap: wrap;
+  }
+  .store_item{
+    flex: 0 0 33.333%;
+    padding: 0 15px;
+    position: relative;
+    cursor: pointer;
+    margin-bottom: 20px;
+  }
+  .store-image{
+    padding-top: 70.5%;
+    width: 100%;
+    display: block;
+    background-repeat: no-repeat;
+    background-size: contain;
+    border: 2px solid #fff;
+    transition: all .3s;
+  }
+  #nt_content .store-tile__city{
+    font-size: 18px;
+    text-align: center;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: #333;
+    font-weight: 500;
+/*     font-family:'Neue Montreal Bold' !important; */
+    margin-top:7px
+  }
+  .storeActive .store-image,.store_item:hover .store-image{
+  	transform: scale(1.04);
+  }
+  @media screen and (min-width: 768px){
+  	.storeActive .store-tile__city:after,
+    .store_item:hover .store-tile__city:after{
+      content: '';
+      display: block;
+      width: 80%;
+      height: 2px;
+      background: #999;
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      transform: translate(-50%);
+      animation:widAni .35s ease forwards ;
+    }
+  }
+  @-webkit-keyframes widAni{
+    0%{
+      width: 0%;
+    }
+    100%{
+      width: 60%;
+    }
+  }
+  .store-tile__name{
+    font-size: 16px;
+    color: #333;
+    margin: 0;
+  }
+  .description_box{
+    position: relative;
+  }
+  .store-desc-image{
+    flex: 0 0  calc(50% - 10px);
+    padding-top: 25.79%;
+    box-sizing: border-box;
+    margin: 5px;
+    background-size: contain;
+  }
+  .description_box_img_cont{
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+  }
+  .description_show_box{
+    /* border-top: 1px solid #dfe0e1; */
+    /* border-bottom: 1px solid #dfe0e1; */
+    padding: 60px 0;
+    display: block;
+    width: 75%;
+    min-width: 768px;
+    position: relative;
+    margin: 0 auto;
+    margin-bottom: 15px;
+  }
+  .descItem{
+    margin-bottom: 20px;
+  }
+  #nt_content .street-detail-box .street-name{
+    font-size: 18px;
+    margin-bottom: 5px;
+    color: #333;
+/*     font-family:'Neue Montreal Bold' !important; */
+  }
+  .street-detail-box{
+    width: 100%;
+    /* -webkit-box-orient: horizontal;
+    -webkit-box-direction: reverse;
+    -webkit-flex-direction: row-reverse;
+    -ms-flex-direction: row-reverse;
+    flex-direction: row-reverse;
+    -webkit-box-pack: end;
+    -webkit-justify-content: flex-end;
+    -ms-flex-pack: end;
+    justify-content: flex-end; */
+  }
+  .street-detail-box-bottom{
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    padding-top: 5.6%;
+  }
+  .store-details__close{
+    background-color: rgba(0,0,0,0);
+    border: 0;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    padding: 0;
+    cursor: pointer;
+    position: absolute;
+    right: 0;
+    top: 20px;
+  }
+  .store-details__close svg{
+    -webkit-transition: -webkit-transform .25s ease-out;
+    transition: -webkit-transform .25s ease-out;
+    -o-transition: transform .25s ease-out;
+    transition: transform .25s ease-out;
+    transition: transform .25s ease-out,-webkit-transform .25s ease-out;
+    -webkit-transform: scale(1);
+    -ms-transform: scale(1);
+    transform: scale(1);
+    -webkit-transform-origin: center;
+    -ms-transform-origin: center;
+    transform-origin: center;
+    margin: auto;
+    width: 18px;
+    height: 18px;
+  }
+  .store-details__close:hover{
+    border: 0;
+    background: transparent;
+    color: #333;
+  }
+  #nt_content .street-detail-box .street-detail-item{
+    position: relative;
+    font-size: 14px;
+    color: #656565;
+/*     font-family:'Neue Montreal Bold' !important; */
+  }
+  .street-detail-box-bottom .street-detail-item::after{
+    content: '';
+    display: block;
+    width: 1px;
+    height: 80%;
+    top: 10%;
+    position: absolute;
+    right: 0;
+    background-color: #dfe0e1;
+  }
+  .street-detail-box-bottom .street-detail-item:last-child:after{
+    width: 0;
+  }
+  .border{
+    height: 1px ;
+    background-color: #999;
+    width: 350px;
+    margin: 25px 0;
+  }
+  .swiper_container{
+    position: relative;
+    display: none;
+  }
+    .swiper_container_warp{
+      position: relative;
+      display: flex;
+      overflow: hidden;
+    }
+    .swiper_container .store-desc-image{
+      flex: 0 0 calc(100% - 20px);
+      padding-top: 62%;
+    }
+   @media screen and (max-width: 768px){
+     .storeActive .store-image {
+        box-sizing: border-box;
+        box-shadow: 0px 1px 5px #727272;
+/*         margin-bottom: 10px; */
+        transition: all .3s;
+      }
+     .store-details__close{
+      display:none
+     }
+      .swiper_container{
+        display: block;
+      }
+      .flickity-prev-next-button.next{
+        top: 50%;
+        right: 0;
+        transform: translateY(-50%)  rotate(180deg);
+      }
+      .flickity-prev-next-button.previous{
+        top: 50%;
+        left: 0;
+        transform: translateY(-50%);
+      }
+     .page_head_pages_heading{
+       padding:20px 0 ;
+     }
+     .description_box_img_cont{
+       display: none;
+     }
+      .store_item{
+        width: 33.333%;
+        padding: 0 10px
+      }
+     .description_show_box{
+     	  padding: 30px 0;
+        width: 100%;
+        min-width: 100%;
+     }
+     .store-desc-image{
+       width: 100%;
+       height: auto;
+     	  margin: 10px;
+       background-repeat: no-repeat
+     }
+     .description_box{
+     	  flex-wrap: wrap
+     }
+     .border{
+       width: 100%;
+     }
+     #shopify-section-pages_heading .page_head_pages_heading h1{
+       font-size: 23px;
+     }
+     #nt_content .store-tile__city{
+       font-size: calc(10vw / 3);
+     }
+     #nt_content .street-detail-box .street-name{
+       font-size: calc(10vw / 2.5);
+     }
+     #nt_content .street-detail-box .street-detail-item{
+       font-size: 14px;
+     }
+     .flickity-prev-next-button.next{
+      right: -15px !important;
+    }
+    .flickity-prev-next-button.previous{
+      left: -15px !important;
+    }
+    .flickity-prev-next-button.next:before{
+      content: ''!important;
+      border: none;
+      border-top: 2px solid #483f3f;
+      border-right: 2px solid #483f3f;
+      transform: rotate(225deg);
+      width: 15px;
+      height: 15px;
+    }
+    .flickity-prev-next-button.previous:before{
+      content: ''!important;
+      border: none;
+      border-top: 2px solid #483f3f;
+      border-left: 2px solid #483f3f;
+      transform: rotate(-45deg);
+      width: 15px;
+      height:15px;
+    }
+  }
+  @media screen and (max-width: 445px){
+    .store-image{
+      background-size: 111px 111px;
+      padding-top: 100%;
+      border-radius: 100%;
+    }
+  }
+  #shopify-section-instagram_shop h3 {
+   font-size: 23px
+  }
+</style>
+  
+{%- schema -%}
+  {
+    "name": "Stores",
+    "class": "nt_section type_banner",
+    "max_blocks": 30,
+    "settings": [
+      {
+        "type": "header",
+        "content": "== Title Settings"
+      },
+      {
+        "type": "select",
+        "id": "image_ratio",
+        "label": "Aspect Ratio",
+        "default": "auto",
+        "info": "Aspect Ratio Custom will settings in General panel.",
+        "options": [
+          {
+            "group": "Auto",
+            "value": "auto",
+            "label": "Adapt to image"
+          },
+          {
+            "group": "Landscape",
+            "value": "ratio2_1",
+            "label": "2:1"
+          },
+          {
+            "group": "Landscape",
+            "value": "ratio16_9",
+            "label": "16:9"
+          },
+          {
+            "group": "Landscape",
+            "value": "ratio8_5",
+            "label": "8:5"
+          },
+          {
+            "group": "Landscape",
+            "value": "ratio3_2",
+            "label": "3:2"
+          },
+          {
+            "group": "Landscape",
+            "value": "ratio4_3",
+            "label": "4:3"
+          },
+          {
+            "group": "Landscape",
+            "value": "ratio_nt",
+            "label": "Ratio ASOS"
+          },
+          {
+            "group": "Squared",
+            "value": "ratio1_1",
+            "label": "1:1"
+          },
+          {
+            "group": "Portrait",
+            "value": "ratio2_3",
+            "label": "2:3"
+          },
+          {
+            "group": "Portrait",
+            "value": "ratio1_2",
+            "label": "1:2"
+          },
+          {
+            "group": "Custom",
+            "value": "ratio_cus1",
+            "label": "Ratio Custom 1"
+          },
+          {
+            "group": "Custom",
+            "value": "ratio_cus2",
+            "label": "Ratio Custom 2"
+          },
+          {
+            "group": "Custom",
+            "value": "ratio_cus3",
+            "label": "Ratio Custom 3"
+          },
+          {
+            "group": "Custom",
+            "value": "ratio_cus4",
+            "label": "Ratio Custom 4"
+          }
+        ]
+      }
+    ],
+    "blocks": [{
+    "type": "image",
+    "name": "Store",
+    "settings": [
+      {
+         "type": "image_picker",
+         "id": "image",
+         "label": "Image"
+       },
+      {
+        "type": "text",
+        "id": "title",
+        "label": "Store Name"
+      },
+      {
+        "type": "textarea",
+        "id": "title_2",
+        "label": "Store Description"
+      },
+      {
+        "type": "image_picker",
+        "id": "info_image1",
+        "label": "info_image1"
+      },
+      {
+        "type": "image_picker",
+        "id": "info_image2",
+        "label": "info_image2"
+      },
+      {
+        "type": "image_picker",
+        "id": "info_image3",
+        "label": "info_image3"
+      },
+      {
+        "type": "image_picker",
+        "id": "info_image4",
+        "label": "info_image4"
+      },
+      {
+        "type": "textarea",
+        "id": "address",
+        "label": "address"
+      },
+      {
+        "type": "text",
+        "id": "tel",
+        "label": "Tel"
+      },
+      {
+        "type": "textarea",
+        "id": "open_hour",
+        "label": "Open Hour"
+      }
+      ]
+    }],
+    "presets": [
+      {
+        "name": "1. Banner",
+        "category": "III. Image",
+        "blocks": [
+          { "type": "image" },
+          { "type": "image" }
+        ]
+      }
+    ]
+  }
+{% endschema %}

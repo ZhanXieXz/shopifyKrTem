@@ -1,0 +1,469 @@
+{%- comment -%}
+  Add hide acc heading - by Viseo
+{%- endcomment -%}
+{% comment %}{%- section 'acc_heading' -%}{% endcomment %}
+{%- comment -%}
+  End Add hide acc heading
+{%- endcomment -%}
+<script src="{{ 'account.js' | asset_url }}" defer="defer"></script>
+<div id="profile_page" class="container mt__60 mb__60" customer-id={{ customer.id }}>
+  <div class="row">
+     <div class="col-12 col-md-3 sp-myaccount-sidebar is_sticky_sidebar">
+        <nav class="sp-myaccount-nav mb__30 theiaStickySidebar">
+           <ul class="ul_none is_sticky_inner">
+              <li class="sp-myaccount-nav-link sp-myaccount-nav-link--dashboard is-active pe_none">
+                {%- comment -%}
+                  change the link name to profile - by Viseo
+                {%- endcomment -%}
+                 <a class="js_add_ld" href="{{ routes.account_url }}">{{ 'customer.account.profile' | t }}</a>
+                {%- comment -%}
+                  end change the link name to profile - by Viseo
+                {%- endcomment -%}
+              </li>
+              <li class="sp-myaccount-nav-link sp-myaccount-nav-link--edit-address">
+                 <a class="js_add_ld" href="{{ routes.account_addresses_url }}">{{ 'customer.addresses.title' | t }} ({{ customer.addresses_count }})</a>
+              </li>
+               <li class="sp-myaccount-nav-link sp-myaccount-nav-link--orderdetails is-active pe_none d-none" data-label="{{ 'customer.order.title'| t }}" data-url="{{ routes.account_url }}">
+                 <a class="js_add_ld">{{ 'customer.order.title' | t: name: order.name }}</a>
+               </li>
+              {%- comment -%}
+                add orderhistory link - by Viseo
+              {%- endcomment -%}
+              <li class="sp-myaccount-nav-link sp-myaccount-nav-link--orderhistory">
+                 <a class="js_add_ld" href="{{ routes.account_url }}#orderhistory">{{ 'customer.account.orderhistory_points' | t }}</a>
+              </li>
+              {%- comment -%}
+                end add orderhistory link - by Viseo
+              {%- endcomment -%}
+              {%- comment -%}
+                add vouchers link - by Viseo
+              {%- endcomment -%}
+              <li class="sp-myaccount-nav-link sp-myaccount-nav-link--vouchers">
+                 <a class="js_add_ld" href="{{ routes.account_url }}#vouchers">{{ 'customer.account.vouchers' | t }}</a>
+              </li>
+              {%- comment -%}
+                end add vouchers link - by Viseo
+              {%- endcomment -%}
+              {%- comment -%}
+                add points history link
+              <li class="sp-myaccount-nav-link sp-myaccount-nav-link--pointshistory">
+                 <a class="js_add_ld" href="{{ routes.account_url }}#pointshistory">{{ 'customer.account.pointshistory' | t }}</a>
+              </li>
+                end add points history link - by Viseo
+              {%- endcomment -%}
+              {%- if settings.wishlist_type != '0' -%}
+              <li class="sp-myaccount-nav-link sp-myaccount-nav-link--wishlist">
+                 <a class="js_link_wis" href="{{ routes.search_url }}/?view=wish">{{ 'customer.account.wishlist' | t }} (<span class="jswcount">0</span>)</a>
+              </li>
+              {%- endif -%}
+              <li class="sp-myaccount-nav-link sp-myaccount-nav-link--customer-logout">
+                <a class="js_add_ld" href="{{routes.account_logout_url}}" data-no-instant>{{ 'customer.account.log_out' | t }}</a>
+              </li>
+           </ul>
+        </nav>
+     </div>
+     <div class="col-12 col-md-9 sp-myaccount-content is_sticky_content">
+     <div id="left_side" class="theiaStickySidebar d-none">{%- assign customer_name = customer.name |default:customer.default_address.name |default:customer.email -%}
+         {%- comment -%}
+          add class name - by Viseo
+         {%- endcomment -%}
+         <p class="account-logout">{{ 'customer.account.hello_html' | t:name:customer_name,link:routes.account_logout_url }}</p>
+         {%- comment -%}
+          end add class name - by Viseo
+         {%- endcomment -%}
+         {%- if settings.enable_sub_reCharge -%}   
+         <!-- Begin ReCharge code -->
+         <p clas="mt__30" id="rc_link_container"><a href="/tools/recurring/login">{{ 'customer.account.manage_subs' | t }}</a></p>
+         <!-- End ReCharge code -->
+         {%- endif -%}
+         {%- comment -%}
+          change to title - by Viseo
+         {%- endcomment -%}
+         <h2 class="orderhistory-title"><strong>{{ 'customer.orders.title' | t }}</strong></h2>
+         {%- comment -%}
+          end change to title - by Viseo
+         {%- endcomment -%}
+          <div class="orders">
+            {% comment %}Order history from Cegid - by Viseo{% endcomment %}
+              <table id="order_table" class="responsive-table orderhistory-table d-none">
+                  <thead>
+                    <tr>
+                      <th scope="col" id="order_number" data-label-text="{{ 'customer.orders.order_number' | t }}">{{ 'customer.orders.order_number' | t }}</th>
+                      <th scope="col" id="date" data-label-text="{{ 'customer.orders.date' | t }}">{{ 'customer.orders.date' | t }}</th>
+                      <th scope="col" id="payment_status" data-label-text="{{ 'customer.orders.payment_status' | t }}">{{ 'customer.orders.payment_status' | t }}</th>
+                      <th scope="col" id="fulfillment_status" data-label-text="{{ 'customer.orders.fulfillment_status' | t }}">{{ 'customer.orders.fulfillment_status' | t }}</th>
+                      <th scope="col" id="total" data-label-text="{{ 'customer.orders.total' | t }}">{{ 'customer.orders.total' | t }}</th>
+                      {%- comment -%}
+                        add col for point and orderdetails - by Viseo
+                      {%- endcomment -%}
+                      <th scope="col" id="point" data-label-text="{{ 'customer.orders.point' | t }}">{{ 'customer.orders.point' | t }}</th>
+                      <th scope="col" id="orderdetails" data-label-text="{{ 'customer.orders.orderdetails' | t }}">{{ 'customer.orders.orderdetails' | t }}</th>
+                      {%- comment -%}
+                        end add col for point and orderdetails - by Viseo
+                      {%- endcomment -%}
+                    </tr>
+                  </thead>
+                  <tbody id="order_history">
+                    {% comment %}this body will be rendered by accout.js after getting the orders from Cegid - by Viseo{% endcomment %}
+                  </tbody>
+               </table>
+            {% comment %}End of order history from Cegid - by Viseo {% endcomment %}
+                <button id="load_more_orders" class="d-none">load more</button>
+            <div id="no_order_message" class="shopify-message d-none"><i class="facl facl-ok"></i><a class="btn_link fwsb tu mr__10" href="{{routes.all_products_collection_url | sort_by: 'best-selling'}}">{{ 'customer.make_order' | t }}</a> {{ 'customer.orders.none' | t }}</div>
+            <div id="error_order_message" class="shopify-error d-none"><i class="facl facl-info"></i> {{ 'customer.order.fetch_error' | t }}</div>
+          </div>
+          {% render 'order-details' %}
+
+         {%- comment -%}
+          add class name - by Viseo
+         {%- endcomment -%}
+         <p class="mt__40 account-details-title"><strong>{{ 'customer.account.details' | t }}</strong></p>
+            <div class="table-responsive account-details-table">
+            {%- comment -%}
+              end add class name - by Viseo
+            {%- endcomment -%}
+              <form id="edit_account" data-id="{{ customer.id }}">
+               <table>
+                 <tbody>
+                   <tr>
+                     <td class="text-left"><strong>{{ 'customer.account.first_name' | t }}</strong></td>
+                     <td><p id="first_name">{{ customer.first_name }}</p><input id="first_name_input" class="edit_fields" type="text" value="{{ customer.first_name }}" required></td>
+                   </tr>
+                   <tr>
+                     <td class="text-left"><strong>{{ 'customer.account.last_name' | t }}</strong></td>
+                     <td><p id="last_name">{{ customer.last_name }}</p><input  id="last_name_input" class="edit_fields" type="text" value="{{ customer.last_name }}"required></td>
+                   </tr>
+                   <tr>
+                     <td class="text-left"><strong>{{ 'customer.account.email' | t }}</strong></td>
+                     <td>{{ customer.default_address.email |default:customer.email }}</td>
+                   </tr>
+
+                  {% comment %}
+                    Add fields for birthday, contact number - by Viseo
+                  {% endcomment %}
+                   <tr>
+                     <td id="birth_date_label" class="text-left"><strong>{{ 'customer.account.birthday' | t }}</strong></td>
+                     <td id="birth_date"></td>
+                   </tr>
+
+                   <tr>
+                     <td class="text-left"><strong>{{ 'customer.account.phone' | t }}</strong></td>
+                     <td>{{ customer.phone }} </td>
+                   </tr>
+
+                  {% comment %}
+                    End Add fields for birthday, contact number - by Viseo
+                  {% endcomment %}
+
+                   {%- if customer.default_address != nil -%}
+                      <tr>
+                        <td class="text-left"><strong>{{ 'customer.account.address' | t }}</strong></td>
+                        <td>{{ customer.default_address.address1 }}</td>
+                      </tr>
+                      {%- if customer.default_address.address2 != "" -%}
+                      <tr>
+                        <td class="text-left"><strong>{{ 'customer.account.address_2' | t }}</strong></td>
+                        <td>{{ customer.default_address.address2 }}</td>
+                      </tr>
+                      {%- endif -%}
+                      {%- if customer.default_address.city != blank -%}
+                      <tr>
+                        <td class="text-left"><strong>{{ 'customer.account.country' | t }}</strong></td>
+                        <td>{{ customer.default_address.city}}, {% if address.province_code %}{{customer.default_address.province_code}}, {% endif %}{{customer.default_address.country}}</td>
+                      </tr>
+                      {%- endif -%}
+                      {%- if customer.default_address.zip != blank -%}
+                      <tr>
+                        <td class="text-left"><strong>{{ 'customer.account.zip' | t }}</strong></td>
+                        <td>{{ customer.default_address.zip }}</td>
+                      </tr>
+                      {%- endif -%}
+                      {%- if customer.default_address.phone != blank -%}
+                      <tr>
+                        <td class="text-left"><strong>{{ 'customer.account.phone' | t }}</strong></td>
+                        <td>{{ customer.default_address.phone }}</td>
+                      </tr>
+                      {%- endif -%}
+
+                   {%- endif -%}
+                 </tbody>
+               </table>
+               <div class="edit_btns">
+                <a href="#" class="button button_primary btn_edit">edit</a>
+                 <div id="failed_message" class="shopify-error d-none"><i class="facl facl-info"></i> {{ 'customer.update_error' | t }}</div>
+                 <a href="#" class="button btn_cancel">cancel</a>
+                <button type="submit" class="button button_primary btn_submit">submit</button>
+                </div>
+              </form>
+            </div>
+
+         {%- comment -%}
+          change add vouchers - by Viseo
+         {%- endcomment -%}
+         <h2 class="vouchers-title"><strong>{{ 'customer.account.vouchers' | t }}</strong></h2>
+         <div class="vouchers-details">
+          <div class="club-body">
+            <div class="pointsTitle">Your Point Balance：</div>
+            <div class="pointsGet"> <span class="pointsPartAll"> <span data-lion-points="approved" class="pointsPart">0</span> points <span id="check_points_history" style="text-transform: initial;" class="allTiers CheckHistory">Check history</span></span> </div>
+          </div>
+          <div class="club-section itemMargin">
+            <div>AVAILABLE VOUCHERS</div>
+            <table id="available_voucher_table" class="d-none">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Vouchers Type</th>
+                  <th>Vouchers Code</th>
+                  <th>Expiry Date</th>
+                  <th>Online/Offline</th>
+                  <th>Conditions</th>
+                </tr>
+              </thead>
+              <tbody id="available_voucher_table_body">
+              {% comment %} Render by data from Cegid - by Viseo{% endcomment %}
+              </tbody>
+            </table>
+            <button id="load_more_available_vouchers" class="d-none">load more</button>
+            <div id="no_available_vouchers_message" class="shopify-message d-none"><i class="facl facl-ok"></i>No available vouchers</div>
+            <div id="error_available_vouchers_message" class="shopify-error d-none"><i class="facl facl-info"></i> Failed to get available vouchers</div>
+          </div>
+          <div class="club-section itemMargin">
+            <div>REDEEMED VOUCHERS</div>
+            <table id="redeemed_voucher_table" class="d-none">
+              <thead>
+              <tr>
+                <th>Date</th>
+                <th>Vouchers Type</th>
+                <th>Vouchers Code</th>
+                <th>Order NO.</th>
+              </tr>
+              </thead>
+              <tbody id="redeemed_voucher_table_body">
+              {% comment %} Render by data from Cegid - by Viseo{% endcomment %}
+              </tbody>
+            </table>
+            <div id="no_redeemed_vouchers_message" class="shopify-message d-none"><i class="facl facl-ok"></i>No redeemed vouchers</div>
+            <div id="error_redeemed_vouchers_message" class="shopify-error d-none"><i class="facl facl-info"></i> Failed to get redeemed vouchers</div>
+            <p>If an order refund is made, vouchers used will not be credited back to the vouchers tab.</p>
+            <button id="load_more_redeemed_vouchers" class="d-none">load more</button>
+          </div>
+         </div>
+         {%- comment -%}
+          end add vouchers - by Viseo
+         {%- endcomment -%}
+
+         {%- comment -%}
+          change add pointshistory - by Viseo
+         {%- endcomment -%}
+         <h2 class="pointshistory-title"><strong>{{ 'customer.account.pointshistory' | t }}</strong></h2>
+         <div class="pointshistory-details">
+          <div class="club-body">
+            <div class="pointsTitle">Your Point Balance：</div>
+            <div class="pointsGet"> <span class="pointsPartAll"> <span data-lion-points="approved" class="pointsPart">0</span> points </div>
+          </div>
+          <div class="club-section itemMargin">
+            <div></div>
+            <table>
+              <tbody>
+                <tr>
+                  <th>Order NO.</th>
+                  <th>Date</th>
+                  <th>Points Earned</th>
+                </tr>
+                <tr>
+                  <td class="orderno">urbanrevivokr-8313</td>
+                  <td class="date">March 2, 2022</td>
+                  <td class="points">+39</td>
+                </tr>
+                <tr>
+                  <td class="orderno">urbanrevivokr-8313</td>
+                  <td class="date">March 2, 2022</td>
+                  <td class="points">+39</td>
+                </tr>
+                <tr>
+                  <td class="orderno">urbanrevivokr-8313</td>
+                  <td class="date">March 2, 2022</td>
+                  <td class="points">+39</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+         </div>
+         {%- comment -%}
+          end add pointshistory - by Viseo
+         {%- endcomment -%}
+     </div>
+
+     </div>
+  </div>
+</div>
+
+{%- comment -%}
+  add check vouchers history popup - by Viseo
+{%- endcomment -%}
+<div class="vouchers_popup">
+  <div class="vouchers_popup__overlay"></div>
+  <div class="vouchers_popup__inner">
+    <div id="points_history_close" class="vouchers_popup__close">
+      <svg class="Icon Icon--close" role="presentation" viewBox="0 0 16 14">
+        <path d="M15 0L1 14m14 0L1 0" stroke="currentColor" fill="none" fill-rule="evenodd"></path>
+      </svg>
+    </div>
+    <div class="vouchers_popup__title">Points History</div>
+    <table id="points_history_table" class="lion-history-table d-none">
+      <thead>
+        <tr>
+          <th data-i18n-key="ui.general.date" class="lion-history-table__header-cell">Date</th>
+          <th data-i18n-key="ui.general.action" class="lion-history-table__header-cell">Action</th>
+          <th data-i18n-key="ui.general.points_plural" class="lion-history-table__header-cell">Points</th>
+        </tr>
+      </thead>
+      <tbody id="points_history_table_body">
+      {% comment %} Render the points history from Cegid - by Viseo {% endcomment %}
+      </tbody>
+    </table>
+    <button id="load_more_points_history" class="d-none">load more</button>
+    <div id="no_points_history" class="shopify-message d-none"><i class="facl facl-ok"></i>No points history</div>
+    <div id="error_points_history_message" class="shopify-error d-none"><i class="facl facl-info"></i> Failed to get points history</div>
+  </div>
+</div>
+{%- comment -%}
+  end check vouchers history popup - by Viseo
+{%- endcomment -%}
+
+{%- comment -%}
+  add javascript - by Viseo
+{%- endcomment -%}
+
+<script>
+  $(".sp-myaccount-nav-link--orderhistory a").on('click', function(evt) {
+    evt.preventDefault();
+    changePage("orderhistory");
+  });
+  $(".sp-myaccount-nav-link--vouchers a").on('click', function(evt) {
+    evt.preventDefault();
+    changePage("vouchers");
+  });
+  $(".sp-myaccount-nav-link--pointshistory a").on('click', function(evt) {
+    evt.preventDefault();
+    changePage("pointshistory");
+  });
+  $(".sp-myaccount-nav-link--dashboard a").on('click', function(evt) {
+    evt.preventDefault();
+    changePage("dashboard");
+  });
+  $(".btn_edit").on('click', function(evt) {
+    evt.preventDefault();
+    $(".account-details-table p").hide();
+    $(".account-details-table .btn_edit").hide();
+    $(".account-details-table .edit_fields").show();
+    $(".account-details-table .btn_cancel").show();
+    $(".account-details-table .btn_submit").show();
+  });
+  $(".btn_cancel").on('click', function(evt) {
+    evt.preventDefault();
+    $(".account-details-table p").show();
+    $(".account-details-table .btn_edit").show();
+    $(".account-details-table .edit_fields").hide();
+    $(".account-details-table .btn_cancel").hide();
+    $(".account-details-table .btn_submit").hide();
+  });
+  if(window.location.hash) {
+    var hash = window.location.hash.substring(1); //Puts hash in variable, and removes the # character
+    if(hash) {
+      changePage(hash);
+    }else {
+      changePage("dashboard");
+    }
+  }
+  function changePage(target){
+      window.location.hash = "#" + target;
+      $(".sp-myaccount-nav-link.is-active").removeClass("is-active");
+      $(".sp-myaccount-nav-link.pe_none").removeClass("pe_none");
+      $(".sp-myaccount-nav-link--orderdetails").addClass("d-none");
+      if(target == "orderhistory"){
+        $(".sp-myaccount-nav-link--orderhistory").addClass("is-active");
+        $(".sp-myaccount-nav-link--orderhistory").addClass("pe_none");
+
+        $("#shopify-section-acc_heading").hide();
+        $(".account-details-title").hide();
+        $(".account-details-table").hide();
+        $(".account-logout").hide();
+        $(".vouchers-title").hide();
+        $(".vouchers-details").hide();
+        $(".pointshistory-title").hide();
+        $(".pointshistory-details").hide();
+        $("#customer_id_label").hide();
+        $("#customer_id").hide();
+        $(".id-code").hide();
+
+        $(".orders").show();
+        $(".orderhistory-title").show();
+        $(".orderhistory-table").show();
+        $('#error_order_details_message').addClass('d-none');
+        $("#order_details").hide();
+      }else if(target == "vouchers"){
+        $(".sp-myaccount-nav-link--vouchers").addClass("is-active");
+        $(".sp-myaccount-nav-link--vouchers").addClass("pe_none");
+
+        $("#shopify-section-acc_heading").hide();
+        $(".account-details-title").hide();
+        $(".account-details-table").hide();
+        $(".account-logout").hide();
+        $(".orders").hide();
+        $(".orderhistory-title").hide();
+        $(".orderhistory-table").hide();
+        $("#order_details").hide();
+        $(".pointshistory-title").hide();
+        $(".pointshistory-details").hide();
+        $("#customer_id_label").hide();
+        $("#customer_id").hide();
+        $(".id-code").hide();
+
+        $(".vouchers-title").show();
+        $(".vouchers-details").show();
+      }else if(target == "pointshistory"){
+        $(".sp-myaccount-nav-link--pointshistory").addClass("is-active");
+        $(".sp-myaccount-nav-link--pointshistory").addClass("pe_none");
+
+        $("#shopify-section-acc_heading").hide();
+        $(".account-details-title").hide();
+        $(".account-details-table").hide();
+        $(".account-logout").hide();
+        $(".orders").hide();
+        $(".orderhistory-title").hide();
+        $(".orderhistory-table").hide();
+        $(".vouchers-title").hide();
+        $(".vouchers-details").hide();
+        $("#customer_id_label").hide();
+        $("#customer_id").hide();
+        $(".id-code").hide();
+
+        $(".pointshistory-title").show();
+        $(".pointshistory-details").show();
+      }else {
+        $(".sp-myaccount-nav-link--dashboard").addClass("is-active");
+        $(".sp-myaccount-nav-link--dashboard").addClass("pe_none");
+
+        $(".orders").hide();
+        $(".orderhistory-title").hide();
+        $(".orderhistory-table").hide();
+        $("#order_details").hide();
+        $(".vouchers-title").hide();
+        $(".vouchers-details").hide();
+        $(".pointshistory-title").hide();
+        $(".pointshistory-details").hide();
+
+        $(".account-details-title").show();
+        $(".account-details-table").show();
+        $(".account-logout").show();
+        $("#shopify-section-acc_heading").show();
+        $("#customer_id_label").show();
+        $("#customer_id").show();
+        $(".id-code").show();
+      }
+  }
+</script>
+{%- comment -%}
+  end add javascript - by Viseo
+{%- endcomment -%}

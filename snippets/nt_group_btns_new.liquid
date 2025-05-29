@@ -1,0 +1,274 @@
+{%- liquid 
+  assign routes_search_url = routes.search_url
+  assign ic_stt = settings.h_icon
+  assign cart_des = settings.cart_des
+  assign loyalty_tier = customer.metafields.loyaltylion.loyalty_tier
+  case ic_stt
+    when 'iccl' 
+       assign arric = 'iccl iccl-search,iccl iccl-user,iccl iccl-heart,iccl iccl-cart' | split:','
+    when 'pegk' 
+       assign arric = 'pegk pe-7s-search,pegk pe-7s-user,pegk pe-7s-like,pegk pe-7s-shopbag' | split:','
+    when 'facl' 
+       assign arric = 'facl facl-search,facl facl-user,facl facl-heart,facl facl-basket' | split:','
+    when 'la' 
+       assign arric = 'las la-search,las la-user,lar la-heart,las la-shopping-cart' | split:','
+endcase -%}
+ 
+<div class="nt_action in_flex al_center cart_des_{{cart_des}}">
+   {%- if settings.show_search -%}
+     {%- if frm_search -%}
+     <div class="frm_search_ac pr widget dn db_lg">
+        <form action="{{ routes_search_url }}" method="get" class="search_header mini_search_frm pr js_frm_search flex al_center" role="search">
+          <input type="hidden" name="type" value="product">
+          <input type="hidden" name="options[unavailable_products]" value="{{settings.unavailable_prs}}">
+          <input type="hidden" name="options[prefix]" value="{{settings.prefix}}">
+          {%- if settings.filter_type_search and shop.types.size > 0 -%}
+          <div class="frm_search_cat">
+             <select name="product_type">
+               <option value="*">{{ 'general.search.all_cat' | t }}</option>
+               {%- for product_type in shop.types -%}{%- if product_type == blank %}{% continue-%}{% endif -%}<option value="{{product_type}}"{% if search_pr_type == product_type %} selected="selected"{% endif %}>{{product_type}}</option>{%- endfor -%}
+             </select>
+          </div>
+          <div class="frm_search_bd"></div>
+         {%- endif -%}
+          <div class="frm_search_input pr oh">
+            <input class="search_header__input js_iput_search" autocomplete="off" type="text" name="q" placeholder="{{ 'general.search.placeholder' | t }}">
+            <button class="search_header__submit js_btn_search{% if settings.ajax_search %} pe_none{% endif %}" type="submit"><i class="iccl iccl-search"></i></button>
+          </div>
+          <div class="ld_bar_search"></div>
+        </form>
+        <div class="search_h_break pa w__100"></div>
+        <div class="search_header__prs fwsb cd pa dn js_prs_search product_list_widget"></div> 
+     </div>
+    <a class="icon_search push_side cb chp dn_lg" title="Search"  data-id="#nt_search_canvas" href="{{ routes_search_url }}"><i class="{{arric[0]}} icon-search"></i><span class="pc-s">SEARCH</span></a>
+    {%- else -%}
+    <a class="icon_search push_side cb chp" title="Search" data-id="#nt_search_canvas" href="{{ routes_search_url }}"><i class="{{arric[0]}} icon-search"></i><span class="pc-s">SEARCH</span></a>
+    {%- endif -%}
+   {%- endif -%}
+  <!-- {%- if shop.customer_accounts_enabled and customer -%}
+   <a class="push_side cb chp icon_rewards_item" title="Rewards" href="https://urbanrevivo.com/account"><i class="icon-rewards"></i></a>
+   {%- else -%}
+   <a class="push_side cb chp icon_rewards_item" title="Rewards" href="https://urbanrevivo.com/pages/rewards"><i class="icon-rewards"></i></a>
+   {%- endif -%} -->
+   {%- if shop.customer_accounts_enabled and settings.show_acc -%}
+  
+     {% capture the_snippet_auth %}{% render 'socialshopwave-widget-auth' %}{% endcapture %}
+     {% if the_snippet_auth contains 'Liquid error' or settings.growave_social_login == false %}
+          <div class="my-account ts__05 pr dn db_md" title="Account">
+              <a class="cb chp db push_side" href="{% if customer %}{{routes.account_url}}{% else %}{{ routes.account_login_url }}{% endif %}" data-id="#nt_login_canvas">
+<!--                 <i class="m-s {{arric[1]}}"></i> -->
+                <span class="pc-s">
+                  {%- if customer -%}
+                    ACCOUNT
+                    {% else %}
+                    LOGIN
+                  {%- endif -%}
+                </span>
+              </a>
+
+             
+             <!-- <i class="{{arric[1]}}"></i> -->
+             {%- if customer -%}
+             <ul class="pa pe_none op__0 tl">
+                <li><h4 class="headLi">Hi, UR Fans!</h4></li>
+                <li>
+                  <div class="iconItem"><i class="icon-account-points {{customer.metafields.loyaltylion.loyalty_tier}}"></i>
+                  <span data-lion-points></span><span>pts</span></div>
+                </li>
+                <li><a class="db cg chp" href="{{routes.account_url}}">{{ 'general.account_text.myorders' | t }}</a></li>
+                <li><a class="db cg chp" href="{{routes.account_addresses_url}}">{{ 'general.account_text.addresses' | t }}</a></li>
+                <li><a class="db cg chp" href="{{routes.account_logout_url}}" data-no-instant>{{ 'general.account_text.logout' | t }}</a></li>
+             </ul>
+            {%- endif -%}
+          </div>
+      {%- else -%}
+          <div id="ssw-topauth" class="ssw-topauth">
+            {% if customer %}
+            <div class="ssw-tprofile ssw-dropdown ssw-custom-login ts__05 pr dn db_md">
+              <a class="ssw-dropdown-toggle cb chp db push_side" data-toggle="ssw-dropdown" href="javascript:void(0);">
+                <i class="{{arric[1]}}"></i>
+              </a>
+              <ul class="ssw-dropdown-menu" role="menu" aria-labelledby="dLabel">
+                <li id="customer_myorders_li"><a tabindex="-1" href="{{routes.account_url}}">{{ 'socialshopwave.my_orders' | t }}</a></li>
+                {% render 'ssw-widget-dropdown' %}
+                <li class="ssw-divider"></li>
+                <li><a id="customer_logout_link" tabindex="-1" href="{{routes.account_logout_url}}" data-no-instant>{{ 'socialshopwave.logout' | t }}</a></li>
+              </ul>
+            </div>
+            {% else %}
+            <div class="ssw-custom-login ts__05 pr dn db_md">
+              <a id="customer_login_link" class="cb chp db push_side" href="javascript:void(0);" data-toggle="ssw-modal" data-target="#login_modal" onclick="trackShopStats('login_popup_view', 'all')">
+                <i class="{{arric[1]}}"></i>
+              </a>
+            </div>
+            {% endif %}
+          </div>
+      {%- endif -%}
+   {%- endif -%}
+   {%- if settings.show_wis -%}
+    {%- if settings.wishlist_type != '3' -%}
+    <!-- <i class="{{arric[2]}} pr"></i> -->
+  	 <a class="pc-s icon_like cb chp pr dn db_md js_link_wis" href="https://urbanrevivo.com/apps/wishlist/">
+        WISHLIST
+        <span class="op__0 ts_op pa tcount jswcount bgb br__50 cw tc uwl-count">0</span>
+      </a>
+    {%- else -%}
+      {% capture the_snippet_fave_icon_menu %}{% render 'ssw-widget-faveicon-menu' with product.id %}{% endcapture %}
+      {% unless the_snippet_fave_icon_menu contains 'Liquid error' %}
+      {{ the_snippet_fave_icon_menu }}
+      {% endunless %}
+    {%- endif -%}
+  {%- endif -%}
+   {%- if cart_des != '0' -%}
+      {%- case cart_des -%}
+         {%- when '2' -%}
+            {%- if settings.cart_pos == 'dropdown' -%}
+              <div class="icon_cart pr in_flex al_center" title="Bag">
+                <a class="pr cb chp dib push_side" data-id="#nt_cart_canvas" href="{{routes.cart_url}}">
+                  <i class="m-s {{arric[3]}}"></i>
+              	<span class="pc-s">SHOPPING BAG</span>
+                  <span class="op__0 ts_op pa tcount jsccount bgb br__50 cw tc">{{ cart.item_count }}</span>
+                </a>
+                <span class="js_cat_ttprice ch_tt_price dn dib_lg ml__15 fwm cd">{{cart.total_price | money}}</span>
+              </div>
+            {%- else -%}
+              <div class="icon_cart pr push_side in_flex al_center" data-id="#nt_cart_canvas" title="Bag">
+                <a class="pr cb chp dib" href="{{routes.cart_url}}">
+                  <i class="m-s {{arric[3]}}"></i>
+              		<span class="pc-s">SHOPPING BAG</span>
+                  <span class="op__0 ts_op pa tcount jsccount bgb br__50 cw tc">{{ cart.item_count }}</span>
+                </a>
+                <span class="js_cat_ttprice ch_tt_price dn dib_lg ml__15 fwm cd">{{cart.total_price | money}}</span>
+              </div>
+            {%- endif -%}
+         {%- when '4' -%}
+           <div class="icon_cart pr in_flex al_center" title="Bag">
+             <a class="pr cb chp dib push_side" data-id="#nt_cart_canvas" href="{{routes.cart_url}}">
+               SHOPPING BAG
+               <span class="js_cat_ttprice ch_tt_price dn dib_lg fwm cd ml__5">{{cart.total_price | money}}</span>
+              </a>
+            </div>
+           {%- comment -%}<div class="icon_cart pr push_side in_flex al_center" data-id="#nt_cart_canvas"><a class="pr cb chp dib" href="{{routes.cart_url}}"><i class="{{ic_stt}} {{arric[3]}}"></i><span class="op__0 ts_op pa tcount jsccount bgb br__50 cw tc">{{ cart.item_count }}</span></a><span class="ch_tt_divider dn dib_lg">/</span><span class="js_cat_ttprice ch_tt_price dn dib_lg fwm cd">{{cart.total_price | money}}</span></div>{%- endcomment -%}
+         {%- else -%}
+          <div class="icon_cart pr" title="Bag">
+            <a class="push_side pr cb chp db" href="{{routes.cart_url}}" data-id="#nt_cart_canvas">
+              <i class="m-s {{arric[3]}}"></i>
+              <span class="pc-s">SHOPPING BAG</span>
+              <span class="op__0 ts_op pa tcount jsccount bgb br__50 cw tc">{{ cart.item_count }}</span>
+            </a>
+          </div>
+      {%- endcase -%}
+   {%- endif -%}
+   {%- if nt_group_btns -%}{%- render 'push_menu' with 'ml__5 dn db_lg' -%}{%- endif -%}
+</div>
+<style>
+  .icon-account-points {
+    display: inline-block;
+    width: 22px;
+    height: 22px;
+    vertical-align: bottom;
+    margin-right: 3px;
+  }
+  .Fashion.Obsessed{
+    background: url(https://cdn.shopify.com/s/files/1/0504/7644/9942/files/fashion-obsessed.png?v=1631692748) no-repeat scroll center/cover;
+  }
+  .Fashion.Addict{
+    background: url(https://cdn.shopify.com/s/files/1/0504/7644/9942/files/fashion-addict.png?v=1631692748) no-repeat scroll center/cover;
+  }
+  .Fashionista{
+    background: url(https://cdn.shopify.com/s/files/1/0504/7644/9942/files/fashionista.png?v=1631692748) no-repeat scroll center/cover;
+  }
+  .Fashion.Icon{
+    background: url(https://cdn.shopify.com/s/files/1/0504/7644/9942/files/fashion-icon.png?v=1631692748) no-repeat scroll center/cover;
+  }
+  .icon-rewards{
+    width:22px;
+    display: inline-block;
+    height: 22px;
+    background: url(https://cdn.shopify.com/s/files/1/0504/7644/9942/files/rewards-icon.png?v=1631770981) no-repeat scroll center/cover;
+  }
+  .iconItem{
+  	padding: 8px 18px;
+    padding-top: 0px;
+    margin-top: -5px;
+    margin-bottom:10px;
+    border-bottom: 1px solid #F7F7F7;
+  }
+  .headLi{
+      font-size: 18px;
+    color:#333;
+    padding:0 18px 0px;
+    font-family: 'NeueMontreal-Regular' !important;
+  }
+  .nt_action .my-account ul li{
+    font-family: 'NeueMontreal-Regular' !important;
+  }
+  .nt_action>a, .nt_action>div>a {
+    white-space: nowrap;
+    
+  }
+  /* @media screen and (min-width: 768px) {
+    .icon_rewards_item{
+      display: block !important; 
+    }
+  } */
+  @media screen and (max-width: 800px){
+    .nt_action a.push_side,
+    .nt_action div.icon_cart {
+      padding: 0 4px;
+    }
+    .nt_action div.icon_cart{
+      padding: 0;
+    }
+/*     .nt_action>a>i,.nt_action>div>a>i{
+      font-size: 18px;
+    }
+    .icon-rewards{
+      width: 18px;
+      height: 18px;
+    } */
+  }
+  @media screen and (max-width: 350px){
+    .nt_action>a>i,.nt_action>div>a>i{
+      font-size: 18px;
+    }
+    .icon-rewards{
+      width: 18px;
+      height: 18px;
+    }
+  }
+  @media screen and (max-width: 1010px){
+    .nt_action.in_flex.al_center.cart_des_1{
+      top: 2px;
+    }
+  }
+  .nt_menu>li>a{
+    font-size: 14px;
+    padding-right: 15px;
+    padding-left: 15px;
+  }
+  
+  /* 移动端icon样式 */
+  @media screen and (max-width: 1024px){
+    #ntheader .icon_search{
+      position: absolute;
+      left: 50px;
+      font-size: 18px;
+      top: 50%;
+      transform: translateY(-44%);
+    }
+    .my-account{
+      display:block !important;
+      padding: 0 !important;
+    }
+  }
+  
+</style>
+
+<script src="{{'jquery-3.4.1.min.js'|asset_url}}"></script>
+<script>
+  if (window.innerWidth<=1024) {
+    var search_btn = $('#ntheader .icon_search')
+   $('#ntheader .header__mid').find('.push_side[data-id="#nt_menu_canvas"]').parent().append(search_btn)
+  }
+</script>

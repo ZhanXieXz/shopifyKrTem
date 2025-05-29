@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="{{ locale }}" dir="{{ direction }}" class="{{ checkout_html_classes }}">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, height=device-height, minimum-scale=1.0, user-scalable=0">
+    <meta name="referrer" content="origin">
+
+    <title>{{ page_title }}</title>
+
+    {{ content_for_header }}
+
+    {{ checkout_stylesheets }}
+    {{ checkout_scripts }}
+  </head>
+  <body>
+    {{ skip_to_content_link }}
+
+    <header class="banner" data-header role="banner">
+      <div class="wrap">
+        {{ content_for_logo }}
+      </div>
+    </header>
+
+    {{ order_summary_toggle }}
+    <div class="content" data-content customer-id="{{ customer.id }}">
+      <div class="wrap">
+        <div class="main">
+          <header class="main__header" role="banner">
+            {{ content_for_logo }}
+            {{ breadcrumb }}
+            {{ alternative_payment_methods }}
+          </header>
+          <main class="main__content" role="main">
+            {{ content_for_layout }}
+          </main>
+          <footer class="main__footer" role="contentinfo">
+            {{ content_for_footer }}
+          </footer>
+        </div>
+        <aside class="sidebar" role="complementary">
+          <div class="sidebar__header">
+            {{ content_for_logo }}
+          </div>
+          <div class="sidebar__content">
+            {{ content_for_order_summary }}
+          </div>
+        </aside>
+      </div>
+    </div>
+
+    {{ tracking_code }}
+    
+    <style>
+      .tipBox{
+        position: relative;
+        display: inline-block;
+      }
+      .tipsImg{
+        width: 20px;
+        vertical-align: top;
+        cursor: pointer;
+      }
+      .tipsMain{
+        display: none;
+        position: absolute;
+        left: 25px;
+        top: -21px;
+        background-color: #fff;
+        box-shadow: 0 2px 12px 0 rgb(0 0 0 / 10%);
+        color: #333;
+        font-size: 14px;
+        padding: 10px;
+        z-index: 1;
+        width: 300px;
+        border-radius: 5px;
+        padding-left: 25px;
+      }
+      .tipsMain:before{
+        content: '';
+        position: absolute;
+        display: block;
+        width: 0;
+        height: 0;
+        border-color: transparent;
+        border-style: solid;
+        border-width: 6px;
+        border-right-color: #fff;
+        border-left-width: 0;
+        filter: drop-shadow(0 2px 12px rgba(0,0,0,.03));
+        left: -6px;
+      }
+      .txtBox{
+        list-style: decimal;
+      }
+      @media (max-width: 470px) {
+        .tipsMain{
+          width: 220px;
+        }
+      }
+      @media (max-width: 390px) {
+        .tipsMain{
+          width: 150px;
+        }
+      }
+
+      /*
+      Checkout error message
+      */
+      voucher_code__message--error {
+          color: #e32c2b;
+      }
+    </style>
+    <script src="{{'jquery-3.4.1.min.js'|asset_url}}"></script>
+    <script>
+      $(function(){
+        $('.section--custom-fields .section__content').after(`<p class="inputTips" style="font-size: 12px;">*수신자 이름,전화번호와 일치한 개인통관고유번호를 입력하십시오!</p>`)
+//         $('.section--custom-fields .section__title').append(`
+//           <div class="tipBox">
+//             <img src="https://cdn.shopify.com/s/files/1/0504/7644/9942/files/tips.png?v=1632389485" class="tipsImg" />
+//             <div class="tipsMain">
+//               <ol class="txtBox">
+//                 <li>배송 지연되지 않도록 개인통관고유부호(PCC) 정확한지 확인하십시오.</li>
+//                 <li>개인통관고유부호가 맞지 않을 경우 비전용 물류동선을 통해 배송해 드리며 배송 기간은 12~20일 걸립니다.</li>
+//               </ol>
+//             </div>
+//           </div>
+//         `)
+
+//         $('.tipsImg').hover(
+//           function(){
+//             $('.tipsMain').show()
+//           } ,
+//           function(){
+//             $('.tipsMain').hide()
+//           } 
+//         ) ;
+      })
+    </script>
+    
+     <div id="policyBox">
+      <li class="policy-list__item ">
+        <a href="https://urbanrevivo.kr/pages/refund-policy">반품 & 환불 정책</a>
+      </li>
+      <li class="policy-list__item ">
+        <a href="https://urbanrevivo.kr/pages/terms-and-conditions">이용 약관</a>
+      </li>
+      <li class="policy-list__item ">
+        <a href="https://urbanrevivo.kr/pages/shipping">배송정보</a>
+      </li>
+      <li class="policy-list__item ">
+        <a href="https://urbanrevivo.kr/pages/privacy-policy">개인정보처리방침</a>
+      </li>
+    </div>
+    <script>
+      var list = document.getElementsByClassName('policy-list')[0]
+      var newlist = document.getElementById('policyBox')
+        list.append(newlist)
+    </script>
+    {% comment %} Import voucher validator js file for validating voucher code - by Viseo {% endcomment %}
+    <script src="{{ 'voucher_validator.js' | asset_url }}" defer="defer"></script>
+  </body>
+</html>

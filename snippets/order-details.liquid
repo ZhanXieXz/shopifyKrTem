@@ -1,0 +1,186 @@
+{%- comment -%}
+This is the snippet for showing Offline order
+{%- endcomment -%}
+<div id="order_details" style="display: none">
+  <div id="error_order_details_message" class="shopify-error d-none"><i
+        class="facl facl-info"></i> {{ 'customer.order.fetch_details_error' | t }}</div>
+  <div id="details_content" class="d-none">
+    <div class="grid__item myaccount__order-history">
+      <h2 id="order_details_number"> {{ 'customer.order.title' | t }} </h2>
+      <p id="order_details_date"> {{ 'customer.order.date_html' | t}} </p>
+
+      <div id="order_cancelled" class="order--cancelled d-none">
+        <p id="order_canceled_date">{{ 'customer.order.cancelled_html' | t }}</p>
+        <p id="order_canceled_reason">{{ 'customer.order.cancelled_reason' | t }}</p>
+      </div>
+
+      <table class="order-table">
+        <thead>
+        <tr>
+          <th scope="col" id="details_product" data-label-text="{{ 'customer.order.product' | t }}">{{ 'customer.order.product' | t }}</th>
+          <th scope="col" id="details_sku" data-label-text="{{ 'customer.order.sku' | t }}">{{ 'customer.order.sku' | t }}</th>
+          <th class="tr" id="details_price" scope="col" data-label-text="{{ 'customer.order.price' | t }}">{{ 'customer.order.price' | t }}</th>
+          <th class="tr" id="details_quantity" scope="col" data-label-text="{{ 'customer.order.quantity' | t }}">{{ 'customer.order.quantity' | t }}</th>
+          <th class="tr" id="details_total" scope="col" data-label-text="{{ 'customer.order.total' | t }}">{{ 'customer.order.total' | t }}</th>
+        </tr>
+        </thead>
+        <tbody id="order_details_table">
+        {%- comment -%}line_item.product.url{%- endcomment -%}
+        {%- for line_item in order.line_items -%}
+          <tr id="{{ line_item.key }}">
+            <th class="order-table__product" scope="row" data-label="{{ 'customer.order.product' | t }}">
+              <div>
+                {% comment %}TODO discount for each product{% endcomment %}
+                {{ line_item.title | link_to: line_item.url }}
+                {%- if line_item.line_level_discount_allocations != blank -%}
+                  <ul class="ul_none order-discount order-discount--list order-discount--title"
+                      aria-label="{{ 'customer.order.discount' | t }}">
+                    {%- for discount_allocation in line_item.line_level_discount_allocations -%}
+                      <li class="order-discount__item">
+                        <i class="facl facl-tags"></i> {{ discount_allocation.discount_application.title }}
+                        (-{{ discount_allocation.amount | money }})
+                      </li>
+                    {%- endfor -%}
+                  </ul>
+                {%- endif -%}
+              </div>
+
+              {% comment %}Offline order doesn't have fullfilment status{% endcomment %}
+                {% comment %}<div class="note">
+                  {%- assign created_at = line_item.fulfillment.created_at | time_tag: format: 'date' -%}
+                  {{ 'customer.order.fulfilled_at_html' | t: date: created_at }}
+                  <div>
+                    <div>
+                      {{ line_item.fulfillment.tracking_company }}
+                      {%- if line_item.fulfillment.tracking_number -%} #{{ line_item.fulfillment.tracking_number }} {%- endif -%}
+                      {%- if line_item.fulfillment.tracking_url -%}
+                        <a href="{{ line_item.fulfillment.tracking_url }}"
+                           style="border: 1px solid #666;padding: 0 3px;margin-left: 10px;border-radius: 1px;">
+                          {{ 'customer.order.track_shipment' | t }}
+                        </a>
+                      {%- endif -%}
+                    </div>
+                  </div>
+                </div>{% endcomment %}
+
+            </th>
+            <td data-label="{{ 'customer.order.sku' | t }}">{{ line_item.sku }}</td>
+            <td class="tr" data-label="{{ 'customer.order.price' | t }}">
+              <dl>
+                {%- if line_item.original_price != line_item.final_price -%}
+                  <dt></dt>
+                  <dd>
+                    <s>{{ line_item.original_price | money }}</s>
+                  </dd>
+                  <dt></dt>
+                  <dd>
+                    <span class="order-discount">{{ line_item.final_price | money }}</span>
+                  </dd>
+                {%- else -%}
+                  <dt></dt>
+                  <dd>
+                    {{ line_item.original_price | money }}
+                  </dd>
+                {%- endif -%}
+              </dl>
+            </td>
+            <td class="tr" data-label="{{ 'customer.order.quantity' | t }}">{{ line_item.quantity }}</td>
+            <td class="tr" data-label="{{ 'customer.order.total' | t }}">
+             {% comment %}render by Cegid{% endcomment %}
+            </td>
+          </tr>
+        {%- endfor -%}
+        </tbody>
+        <tfoot>
+        <tr id="sub_total_row">
+          <th class="small--hide" scope="row" colspan="4">{{ 'customer.order.subtotal' | t }}</th>
+          <td id="sub_total" class="tr"
+              data-label="{{ 'customer.order.subtotal' | t }}">{{ order.line_items_subtotal_price | money }}</td>
+        </tr>
+
+        <tr id="total_discount" class="d-none">
+            <th class="small--hide" scope="row" colspan="4">
+              {{ 'customer.order.discount' | t }}
+            </th>
+            <td class="tr" data-label="{{ 'customer.order.discount' | t }}">
+              <div class="order-discount-wrapper">
+                <span id="total_discount_amount" class="order-discount">-{{ discount_application.total_allocated_amount | money }}</span>
+              </div>
+            </td>
+        </tr>
+
+        {% comment %}This is offline order page{% endcomment %}
+        {% comment %}{%- for shipping_method in order.shipping_methods -%}
+          <tr>
+            <th class="small--hide" scope="row" colspan="4">{{ 'customer.order.shipping' | t }}
+              ({{ shipping_method.title }})
+            </th>
+            <td class="tr"
+                data-label="{{ 'customer.order.shipping' | t }} ({{ shipping_method.title }})">{{ shipping_method.price | money }}</td>
+          </tr>
+        {%- endfor -%}{% endcomment %}
+
+        <tr id="tax_table" data-label="{{ 'customer.order.tax' | t }}"></tr>
+        {%- for tax_line in order.tax_lines -%}
+          <tr>
+            <th class="small--hide" scope="row" colspan="4">{{ 'customer.order.tax' | t }}
+              ({{ tax_line.title }} {{ tax_line.rate | times: 100 }}%)
+            </th>
+            <td class="tr"
+                data-label="{{ 'customer.order.tax' | t }} ({{ tax_line.title }} {{ tax_line.rate | times: 100 }}%)">{{ tax_line.price | money }}</td>
+          </tr>
+        {%- endfor -%}
+
+        <tr id="total_price">
+          <th class="small--hide cd tu" scope="row" colspan="4">{{ 'customer.order.total' | t }}</th>
+          <td id="order_total" class="tr cd fwsb tu" data-label="{{ 'customer.order.total' | t }}">
+            {%- if order.total_price != order.total_net_amount -%}
+              <dl>
+                <dt></dt>
+                <dd>
+                  <s>{{ order.total_price | money_with_currency }}</s>
+                </dd>
+                <dt></dt>
+                <dd>
+                  <span class="order-discount">{{ order.total_net_amount | money_with_currency }}</span>
+                </dd>
+              </dl>
+            {%- else -%}
+              {{ order.total_price | money_with_currency }}
+            {%- endif -%}
+          </td>
+        </tr>
+        </tfoot>
+      </table>
+    </div>
+
+    {% comment %}Offile order don't have any note{% endcomment %}
+    {% comment %}{%- if order.note != blank or order.attributes.gift-note != blank -%}
+      <hr>
+      <div class="col-12 offset-md-2 col-md-8 login-form tc">
+        {%- if order.note != blank -%}
+          <h2>{{ 'customer.order.note' | t }}</h2>
+          <p>{{ order.note }}</p>
+        {%- endif -%}
+        {%- if order.attributes.gift-note != blank -%}
+          <h2>{{ 'customer.order.gift_note' | t }}</h2>
+          <p>{{ order.attributes.gift-note }}</p>
+        {%- endif -%}
+      </div>
+    {%- endif -%}{% endcomment %}
+
+    <hr>
+    <div class="row myaccount__account-details tl_md tc">
+      <div class="col-md-6 col-12 login-form mb__40">
+        <h2>{{ 'customer.order.billing_address' | t }}</h2>
+        <p><strong>{{ 'customer.order.payment_status' | t }}:</strong><span id="details_payment_status"></span></p>
+        <span id="billing_address">{{ order.billing_address | format_address }}</span>
+      </div>
+      <div class="col-md-6 col-12 login-form mb__40">
+        <h2>{{ 'customer.order.shipping_address' | t }}</h2>
+        <p><strong>{{ 'customer.order.fulfillment_status' | t }}:</strong> <span id="details_fulfillment_status"></span></p>
+        <span id="shipping_address">{{ order.shipping_address | format_address }}</span>
+      </div>
+    </div>
+  </div>
+</div>

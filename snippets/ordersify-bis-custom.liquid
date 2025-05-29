@@ -1,0 +1,48 @@
+{% if template contains 'product' %}
+  <script type="text/javascript">
+    (function() {
+      window.ORDERSIFY_BIS = window.ORDERSIFY_BIS || {};
+      window.ORDERSIFY_BIS.is_custom_event = true;
+      function hItg() {
+          setTimeout(function() {
+              var options = [];
+              const elements = document.querySelectorAll('.swatch_pr_item.is-selected');
+              elements.forEach(function(el) {
+                options.push(el.getAttribute('data-escape'));
+              })
+              window.ORDERSIFY_BIS.product.variants.map(function(variant_product) {
+                  if (JSON.stringify(variant_product.options) === JSON.stringify(options)) {
+                      if (window.ORDERSIFY_BIS.setCurrentVariantId) {
+                          window.ORDERSIFY_BIS.setCurrentVariantId(variant_product.id);
+                      }
+                      if (window.ORDERSIFY_BIS.setIsProductAvailable) {
+                          window.ORDERSIFY_BIS.setIsProductAvailable(variant_product.available);
+                      }
+                  }
+              });
+          }, 200);
+      }
+      function bisCustomApp() {
+        hItg();
+        setTimeout(hItg, 2000);
+        var form = document.querySelector('form[action*="/cart/add"]');
+      	if (form) form.addEventListener('change', hItg);
+        const optionEles = document.querySelectorAll('.swatch_pr_item');
+        optionEles.forEach(function(el) {
+          el.addEventListener('click', hItg);
+        })
+      }
+      
+      function onReady(func) {
+        var readyStateCheckInterval = setInterval(function() {
+          if (document && document.readyState === 'complete') {
+            clearInterval(readyStateCheckInterval);
+            func();
+            setTimeout(func, 2000);
+          }
+        }, 10);
+      }
+      onReady(bisCustomApp);
+    })();
+  </script>
+{% endif %}

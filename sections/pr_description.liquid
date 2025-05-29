@@ -1,0 +1,1357 @@
+{%- liquid
+  assign cl_des = settings.des_pr_design
+  assign cl_mb  = section.settings.des_mb
+  if cl_des == '2'
+    assign ck = section.settings.auto
+  else
+    assign ck = true
+  endif 
+  assign additions = product.metafields.additions
+  assign currently_var = product.selected_or_first_available_variant
+  assign cur_var_id = currently_var.id
+  assign pid = product.id
+  assign hd_up = 'fbt-' |append:pid
+  assign fbt_tag = product.tags| where:'fbtt4_' | first | default:hd_up | remove:'fbtt4_'
+  assign nav_up = linklists[fbt_tag].links | where:'type','product_link'
+  assign nav_up_size = nav_up.size 
+  if product.available == false or settings.fbt_pos == '1'
+    assign nav_up_size = 0
+  endif
+  assign des_w  = section.settings.des_w
+  assign des_pr_layout = settings.des_pr_layout
+  assign pr_tags = product.tags
+  assign tag_arr_size = pr_tags | where:'tabt4_' | size -%}
+
+{%- for i in (1..1) -%}
+  {%- unless section.settings.show %}<style>#wrap_des_pr,#shopify-section-pr_description {display: none !important}</style>{% break %}{% endunless -%}
+  <ul class="ul_none ul_tabs is-flex fl_center fs__16 des_mb_{{cl_mb}} des_style_{{cl_des}}">
+
+    {%- for block in section.blocks %}{% assign bk_setts = block.settings -%}
+      {%- case block.type -%}
+      {%- when 'add' %}{% if product.has_only_default_variant %}{% continue %}{% endif -%}
+      <li class="tab_title_block{% if ck %} active{% assign ck = false %}{% endif %}"><a class="db cg truncate pr" href="#tab_{{block.id}}">{{bk_setts.title}}</a></li>
+      {%- when 'buy' %}{% if nav_up_size == 0 %}{% continue %}{% endif -%}
+      <li class="tab_title_block{% if ck %} active{% assign ck = false %}{% endif %}"><a class="db cg truncate pr" href="#tab_{{block.id}}">{{bk_setts.title}}</a></li>
+      {%- when 'des' -%}
+      <li class="tab_title_block{% if ck %} active{% assign ck = false %}{% endif %}"><a class="db cg truncate pr" href="#tab_pr_deskl">{{bk_setts.title}}</a></li>
+      {%- when 'rivui' -%}
+      <li class="tab_title_block{% if ck %} active{% assign ck = false %}{% endif %}"><a class="db cg truncate pr" href="#tab_pr_reivew">{{bk_setts.title}}</a></li>
+      {%- when 'tag_pr' %}{% assign tag_arr = 'tabt4_' | append:bk_setts.title %}{% if tag_arr_size == 0 %}{% continue %}{% endif %}{% assign tag_arr = pr_tags | where:tag_arr %}{% if tag_arr.size == 0 %}{% continue %}{% endif -%}
+      <li class="tab_title_block{% if ck %} active{% assign ck = false %}{% endif %}"><a class="db cg truncate pr" href="#tab_{{block.id}}">{{bk_setts.title}}</a></li>
+      {%- when 'size_pr' %}{% if product.type == blank %}{% continue %}{% endif -%}
+      {%- assign size_pr = 'Size The4 ' | append:product.type | handle -%}
+      {%- assign page_sizet4 = pages[size_pr] -%}
+      {%- if page_sizet4.content == blank %}{% continue %}{% endif -%}{%- assign ck_page_sizet4 = true -%}
+      <li class="tab_title_block{% if ck %} active{% assign ck = false %}{% endif %}"><a class="db cg truncate pr" href="#tab_{{block.id}}">{{bk_setts.title}}</a></li>
+      {%- when 'text' %}
+      <li class="tab_title_block{% if ck %} active{% assign ck = false %}{% endif %}"><a class="db cg truncate pr" href="#tab_{{block.id}}">{{bk_setts.title}}</a></li>
+      {%- when 'html' %}
+      <li class="tab_title_block{% if ck %} active{% assign ck = false %}{% endif %}"><a class="db cg truncate pr" href="#tab_{{block.id}}">{{bk_setts.title}}</a></li>
+      {%- else -%}
+         {%- unless additions[block.type] %}{% continue %}{% endunless -%}
+         <li class="tab_title_block{% if ck %} active{% assign ck = false %}{% endif %}"><a class="db cg truncate pr" href="#tab_{{block.id}}">{{additions[block.type] | split:'|||' | first | strip_html | strip}}</a></li>
+      {%- endcase -%}
+    {%- endfor -%}
+    
+    {%- comment -%}
+    {%- if additions.size > 0  -%}
+      {%- for meta in additions -%}
+        <li class="tab_title_block{% if ck %} active{% assign ck = false %}{% endif %}"><a class="db cg truncate pr" href="#tab_meta_{{forloop.index}}">{{meta[0]}}</a></li>
+       {%- endfor -%}
+    {%- endif -%}
+    {%- endcomment -%}
+
+  </ul>
+  {%- if cl_des == '2' %}{% assign ck = section.settings.auto %}{% else -%}{% assign ck = true %}{% endif -%} 
+  {%- for block in section.blocks %}{% assign bk_setts = block.settings -%}
+    {%- case block.type -%}
+
+      {%- when 'des' -%}
+      <div class="panel entry-content sp-tab des_mb_{{cl_mb}} des_style_{{cl_des}}{% if ck %} active{% assign ck = false %}{% else %} dn{% endif %}" id="tab_pr_deskl" {{ block.shopify_attributes }}>
+      	<div class="js_ck_view"></div><div class="heading bgbl dn"><a class="tab-heading flex al_center fl_between pr cd chp fwm" href="#tab_pr_deskl"><span class="txt_h_tab">{{bk_setts.title}}</span><span class="nav_link_icon ml__5"></span></a></div>
+      	<div class="sp-tab-content rtet4">{{- product.description | split: '[split_dest4]' | last -}}</div>
+      </div>
+
+      {%- when 'buy' -%}{% if nav_up_size == 0 %}{% continue %}{% endif -%} 
+      <div class="panel entry-content sp-tab des_mb_{{cl_mb}} des_style_{{cl_des}}{% if ck %} active{% assign ck = false %}{% else %} dn{% endif %}" id="tab_{{block.id}}" {{ block.shopify_attributes }}>
+        <div class="js_ck_view"></div><div class="heading bgbl dn"><a class="tab-heading flex al_center fl_between pr cd chp fwm" href="#tab_{{block.id}}"><span class="txt_h_tab">{{bk_setts.title}}</span><span class="nav_link_icon ml__5"></span></a></div>
+        <div class="sp-tab-content kl_fbt_wrap js_wrap_group">
+          
+         {%- form 'product', product, id: "fbt_frm_id", class:'fbt_frm', novalidate: 'novalidate' -%}
+           <div class="row al_center">
+             <div class="col-auto">
+               <ul class="ul_none flex wrap al_center kl_fbt_ul">
+                   {%- assign price = currently_var.price -%}{%- assign compare_pr = currently_var.compare_at_price | default:price -%}{%- assign image = currently_var.featured_image | default:product.featured_image -%}
+                   {%- assign img_url = image | img_url: '1x1' | replace: '_1x1.', '_{width}x.' -%}
+                   <li class="kl_fbt_img_0 kl_fbt_img"><img alt="{{currently_var.title | escape}}" src="data:image/svg+xml,%3Csvg%20viewBox%3D%220%200%20{{image.width}}%20{{image.height}}%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3C%2Fsvg%3E" data-src="{{ img_url }}" data-widths="[115, 230]" data-sizes="auto" class="lazyloadt4s lz_op_ef"></li>
+
+                   {%- for link in nav_up %}{% assign pr = link.object -%}
+                       {%- if pid == pr.id or pr.available == false %}{% continue %}{% endif -%}
+                       {%- assign currently = pr.selected_or_first_available_variant -%}
+                       {%- assign cu_pr = currently.price -%}
+                       {%- assign cp_pr = currently.compare_at_price | default:cu_pr -%}
+                       {%- assign price = price | plus:cu_pr -%}{%- assign compare_pr = compare_pr | plus:cp_pr -%}{%- assign image = currently.featured_image | default:pr.featured_image -%}
+                        {%- assign img_url = image | img_url: '1x1' | replace: '_1x1.', '_{width}x.' -%}
+                        <li class="kl_fbt_img kl_fbt_img_{{forloop.index}}"><a href="{{pr.url}}" class="dib"><img alt="{{pr.title | escape}}" src="data:image/svg+xml,%3Csvg%20viewBox%3D%220%200%20{{image.width}}%20{{image.height}}%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3C%2Fsvg%3E" data-src="{{ img_url }}" data-widths="[115, 230]" data-sizes="auto" class="lazyloadt4s lz_op_ef"></a></li>
+                   {%- endfor -%}
+
+               </ul>
+             </div>
+             <div class="col-auto js_fpt_clbtn mt__10 mb__10">
+               <div class="kl_fbt_total_price mb__10"><span class="mr__5">{{'products.fbt.tt_price' | t}}</span><span class="kl_fbt_tt_price" data-cppr='{{compare_pr}}' data-pr='{{price}}'>{% if compare_pr > price %}<del>{{compare_pr| money}}</del> <ins>{{price| money}}</ins>{% else %}{{price| money}}{% endif %}</span></div>
+               <button type="submit" name="add" class="kl_fbt_btn js_add_group single_add_to_cart_button button"><span>{{'products.fbt.add_tc' | t}}</span></button>
+             </div>
+           </div>
+
+           <ul class="ul_none mt__30 mb__15">
+
+             <li class="kl_fbt_li js_item_group kl_fbt_li_0 kl_fbt_checked" data-sl='.kl_fbt_img_0'>
+               {%- assign available_v = product.variants | where: "available" -%}
+               {%- assign available_v_1 = available_v.first -%}
+
+               <input type="checkbox" checked="checked" class="js_fbt_ck" id="kl_fbt_ck_0"><label for="kl_fbt_ck_0" class="pr pe_none"><svg class="dn scl_selected"><use xlink:href="#scl_selected"></use></svg></label>
+               <span><strong>{{'products.fbt.this_item' | t}}</strong> {{product.title | truncatewords: 12}}{% if available_v.size < 2 and product.has_only_default_variant == false %} - {{ available_v_1.title }}{% endif %}</span>
+              
+               {%- if available_v.size < 2 -%}
+                  <input name="items[][id]" class="js_fbt_input" data-ogprice="{{available_v_1.compare_at_price |default:available_v_1.price}}" data-price="{{available_v_1.price}}" value="{{ available_v_1.id }}" type="hidden">
+               {%- else -%}
+                  <select name="items[][id]" class="js_fbt_sl">
+                   {%- for variant in available_v -%}
+                      <option data-img="{{variant.image | default:product.featured_image | img_url: '1x1'}}" data-ogprice="{{variant.compare_at_price |default:variant.price}}" data-price="{{variant.price}}" value="{{ variant.id }}"{% if variant.id == cur_var_id %} selected="selected"{% endif %}>{{ variant.title | escape }}</option>
+                   {%- endfor -%}
+                  </select>
+               {%- endif -%}
+               <input value="1" type="number" name="items[][quantity]" class="hide hidden js_grp_qty">
+               <span class="kl_fbt_price">{% if available_v_1.compare_at_price > available_v_1.price %}<del>{{available_v_1.compare_at_price| money}}</del> <ins>{{available_v_1.price| money}}</ins>{% else %}{{available_v_1.price | money}}{% endif %}</span>
+             </li>
+
+             {%- for link in nav_up %}{% assign pr = link.object -%}
+
+                {%- if pid == pr.id or pr.available == false %}{% continue %}{% endif -%}{%- assign index = forloop.index -%}
+                {%- assign available_v = pr.variants | where: "available" -%}
+                {%- assign available_v_1 = available_v.first -%}
+                <li class="kl_fbt_li js_item_group kl_fbt_li_{{index}} kl_fbt_checked" data-sl='.kl_fbt_img_{{index}}'>
+                  <input type="checkbox" checked="checked" class="js_fbt_ck" id="kl_fbt_ck_{{index}}"><label for="kl_fbt_ck_{{index}}" class="pr"><svg class="dn scl_selected"><use xlink:href="#scl_selected"></use></svg></label>
+                  <a class="kl_fbt_a" href="{{pr.url}}">{{pr.title | truncatewords: 12}}{% if available_v.size < 2 and pr.has_only_default_variant == false %} - {{ available_v_1.title }}{% endif %}</a>
+                 
+                  {%- if available_v.size < 2 -%}
+                     <input name="items[][id]" class="js_fbt_input" data-ogprice="{{available_v_1.compare_at_price |default:available_v_1.price}}" data-price="{{available_v_1.price}}" value="{{ available_v_1.id }}" type="hidden">
+                  {%- else -%}
+                     <select name="items[][id]" class="js_fbt_sl">
+                      {%- for variant in available_v -%}
+                         <option data-img="{{variant.image | default:pr.featured_image | img_url: '1x1'}}" data-ogprice="{{variant.compare_at_price |default:variant.price}}" data-price="{{variant.price}}" value="{{ variant.id }}">{{ variant.title | escape }}</option>
+                      {%- endfor -%}
+                     </select>
+                  {%- endif -%}
+                  <input value="1" type="number" name="items[][quantity]" class="hide hidden js_grp_qty">
+                  <span class="kl_fbt_price">{% if available_v_1.compare_at_price > available_v_1.price %}<del>{{available_v_1.compare_at_price| money}}</del> <ins>{{available_v_1.price| money}}</ins>{% else %}{{available_v_1.price | money}}{% endif %}</span>
+                </li>
+
+             {%- endfor -%}
+           </ul>
+
+       {%- endform -%}
+        </div>
+      </div>
+      <style>.kl_fbt_img:not(.kl_fbt_img_0):before{content:"+";font-size:20px}.kl_fbt_li select{width:auto;border-radius:5px;color:#222;height:36px;line-height:36px;margin-left:5px}.kl_fbt_tt_price{color:#ec0101;font-size:18px}.kl_fbt_price{color:#ec0101;font-size:15px;margin:0 5px}.kl_fbt_wrap del{color:#878787}.kl_fbt_wrap ins{text-decoration:none}.kl_fbt_li:not(:last-child){margin-bottom:10px}.js_fbt_ck,.kl_fbt_li .label{display:none}.kl_fbt_li label:before{position:relative;top:2px;content:'';display:inline-block;margin-right:4px;width:14px;height:14px;min-width:14px;border:1px solid #d4d6d8;background:#fff;box-shadow:none;background-size:0;background-repeat:no-repeat;background-position:50%;transition:all .2s ease-in-out;border-radius:2px;-webkit-appearance:none;transition:border-color .2s ease-in-out,box-shadow .2s ease-in-out,background .2s ease-in-out}.kl_fbt_li svg{display:block;width:10px;height:10px;fill:#fff;position:absolute;top:5px;left:2px;pointer-events:none;transform:scale(0);-webkit-transform:scale(0);-webkit-transition:all .25s ease-in-out;transition:all .25s ease-in-out}.js_fbt_ck:checked+label svg{transform:scale(1);-webkit-transform:scale(1)}.js_fbt_ck:not(:checked)~*{opacity:.2}.js_fbt_ck:not(:checked)+label{opacity:1}.kl_fbt_img img{width:100%;margin:5px 10px;max-width:115px}.kl_fbt_img_0.kl_fbt_img img{margin-left:0}@media (max-width:1024px){.kl_fbt_img img{margin:5px;max-width:70px}.des_style_1.des_mb_2.sp-tab .kl_fbt_img img,.des_style_2 .kl_fbt_img img{max-width:55px}.des_style_1.des_mb_2 .kl_fbt_img_0.kl_fbt_img img{margin-left:5px}.kl_fbt_img:not(.kl_fbt_img_0):before{font-size:16px}.kl_fbt_li label:before{width:24px;height:24px}.kl_fbt_li svg{width:16px;height:16px;top:-2px;left:3px}}</style> 
+      
+      {%- when 'add' %}{% if product.has_only_default_variant %}{% continue %}{% endif -%}
+      <div class="panel entry-content sp-tab des_mb_{{cl_mb}} des_style_{{cl_des}}{% if ck %} active{% assign ck = false %}{% else %} dn{% endif %}" id="tab_{{block.id}}" {{ block.shopify_attributes }}>
+      	<div class="js_ck_view"></div><div class="heading bgbl dn"><a class="tab-heading flex al_center fl_between pr cd chp fwm" href="#tab_{{block.id}}"><span class="txt_h_tab">{{bk_setts.title}}</span><span class="nav_link_icon ml__5"></span></a></div>
+      	<div class="sp-tab-content">
+      		<table class="pr_attrs">
+      			<tbody>
+              {%- for product_option in product.options_with_values -%}
+      				<tr class="attr_pa_{{product_option.name | handle }}">
+      					<th class="attr__label">{{ product_option.name }}</th>
+      					<td class="attr__value">
+      						<p>{% for value in product_option.values %}{{ value }}{% unless forloop.last == true %}, {% endunless %}{% endfor %}</p>
+      					</td>
+      				</tr>
+              {%- endfor -%}
+      			</tbody>
+      		</table>
+      	</div>
+      </div>
+      
+      {%- when 'rivui' -%}
+      <div class="panel entry-content sp-tab des_mb_{{cl_mb}} des_style_{{cl_des}}{% if ck %} active{% assign ck = false %}{% else %} dn{% endif %}" id="tab_pr_reivew" {{ block.shopify_attributes }}>
+      	<div class="js_ck_view"></div><div class="heading bgbl dn"><a class="tab-heading flex al_center fl_between pr cd chp fwm" href="#tab_pr_reivew"><span class="txt_h_tab">{{bk_setts.title}}</span><span class="nav_link_icon ml__5"></span></a></div>
+      	<div class="sp-tab-content">
+          {%- case settings.app_review -%}                        
+              {%- when '1' -%}
+                 <div id="shopify-product-reviews" data-id="{{pid}}">{{ product.metafields.spr.reviews }}</div>
+              {%- when '2' -%}
+                 <div class="lt-block-reviews"><ryviu-widget handle="{{product.handle}}" title_product="{{product.title}}" total_meta="{{ product.metafields.ryviu.r_count }}" image_product="{{ product.featured_image.src | img_url: '800x' }}"></ryviu-widget></div>
+              {%- when '3' -%}
+                 <div id="shopify-ali-review" product-id="{{ pid }}">{{ shop.metafields.review_collector.review_code }}</div>
+              {%- when '4' -%}
+                <div id="looxReviews" data-product-id="{{pid}}" class="loox-reviews-default">{{ product.metafields.loox.reviews }}</div>
+              {%- when '5' -%}
+                {%- capture the_snippet_reviews %}{% render 'socialshopwave-widget-recommends' with 1 %}{% endcapture -%}
+                {%- unless the_snippet_reviews contains 'Liquid error' %}{{ the_snippet_reviews }}{% endunless -%}
+              {%- else -%}
+                <div class="star-rating">{%- render 'review_des_other',product:product -%}</div>
+          {%- endcase -%}
+      	</div>
+      </div>
+      
+      {%- when 'html' -%}
+      <div class="panel entry-content sp-tab des_mb_{{cl_mb}} des_style_{{cl_des}}{% if ck %} active{% assign ck = false %}{% else %} dn{% endif %}" id="tab_{{block.id}}" {{ block.shopify_attributes }}>
+        <div class="js_ck_view"></div><div class="heading bgbl dn"><a class="tab-heading flex al_center fl_between pr cd chp fwm" href="#tab_{{block.id}}"><span class="txt_h_tab">{{bk_setts.title}}</span><span class="nav_link_icon ml__5"></span></a></div>
+        <div class="sp-tab-content">{{pages[bk_setts.page].content}}</div>
+      </div>
+      
+      {%- when 'tag_pr' %}{% if tag_arr_size == 0 %}{% continue %}{% endif %}{% assign tag_arr = 'tabt4_' | append:bk_setts.title %}{% assign tag_arr = pr_tags | where:tag_arr %}{% if tag_arr.size == 0 %}{% continue %}{% endif -%}
+      <div class="panel entry-content sp-tab des_mb_{{cl_mb}} des_style_{{cl_des}}{% if ck %} active{% assign ck = false %}{% else %} dn{% endif %}" id="tab_{{block.id}}" {{ block.shopify_attributes }}>
+        <div class="js_ck_view"></div><div class="heading bgbl dn"><a class="tab-heading flex al_center fl_between pr cd chp fwm" href="#tab_{{block.id}}"><span class="txt_h_tab">{{bk_setts.title}}</span><span class="nav_link_icon ml__5"></span></a></div>
+        <div class="sp-tab-content">{{pages[bk_setts.page].content}}</div>
+      </div>
+      
+      {%- when 'size_pr' %}
+      {%- unless ck_page_sizet4 %}{% continue %}{% endunless -%}
+      <div class="panel entry-content sp-tab des_mb_{{cl_mb}} des_style_{{cl_des}}{% if ck %} active{% assign ck = false %}{% else %} dn{% endif %}" id="tab_{{block.id}}" {{ block.shopify_attributes }}>
+        <div class="js_ck_view"></div><div class="heading bgbl dn"><a class="tab-heading flex al_center fl_between pr cd chp fwm" href="#tab_{{block.id}}"><span class="txt_h_tab">{{bk_setts.title}}</span><span class="nav_link_icon ml__5"></span></a></div>
+        <div class="sp-tab-content">{{page_sizet4.content}}</div>
+      </div>
+
+      {%- when 'text' -%}
+      <div class="panel entry-content sp-tab des_mb_{{cl_mb}} des_style_{{cl_des}}{% if ck %} active{% assign ck = false %}{% else %} dn{% endif %}" id="tab_{{block.id}}" {{ block.shopify_attributes }}>
+        <div class="js_ck_view"></div><div class="heading bgbl dn"><a class="tab-heading flex al_center fl_between pr cd chp fwm" href="#tab_{{block.id}}"><span class="txt_h_tab">{{bk_setts.title}}</span><span class="nav_link_icon ml__5"></span></a></div>
+        <div class="sp-tab-content">{{bk_setts.text}}</div>
+      </div>
+
+      {%- else -%}
+
+      {%- unless additions[block.type] %}{% continue %}{% endunless %}{% assign tab_meta = additions[block.type] | split:'|||' -%}
+      <div class="panel entry-content sp-tab des_mb_{{cl_mb}} des_style_{{cl_des}}{% if ck %} active{% assign ck = false %}{% else %} dn{% endif %}" id="tab_{{block.id}}" {{ block.shopify_attributes }}>
+        <div class="js_ck_view"></div><div class="heading bgbl dn"><a class="tab-heading flex al_center fl_between pr cd chp fwm" href="#tab_{{block.id}}"><span class="txt_h_tab">{{tab_meta[0] | strip}}</span><span class="nav_link_icon ml__5"></span></a></div>
+        <div class="sp-tab-content">{{tab_meta[1] | strip}}</div>
+      </div>
+
+    {%- endcase -%}
+  {%- endfor -%}
+  
+  {%- comment -%}
+  {%- if additions.size > 0 -%}
+    {%- for meta in additions -%}
+          <div class="panel entry-content sp-tab des_mb_{{cl_mb}} des_style_{{cl_des}}{% if ck %} active{% assign ck = false %}{% else %} dn{% endif %}" id="tab_meta_{{forloop.index}}">
+            <div class="heading bgbl dn"><a class="tab-heading flex al_center fl_between pr cd chp fwm" href="#tab_meta_{{forloop.index}}"><span class="txt_h_tab">{{meta[0]}}</span><span class="nav_link_icon ml__5"></span></a></div>
+            <div class="sp-tab-content">{{ meta[1] }}</div>
+          </div>
+    {%- endfor -%}
+  {%- endif -%}
+  {%- endcomment -%}
+
+{%- style -%}
+   {%- if des_pr_layout == '1' %}
+     {%- if des_w == '3' -%}#wrap_des_pr{%- elsif des_w == '1' -%}#shopify-section-pr_description{%- else -%}.container_des{%- endif -%}{background-color: {{section.settings.bgclmb}};}
+     @media (min-width: 1025px){
+        {%- if des_w == '2' or des_w == '4' -%}
+        .container_des {
+              {%- if des_w == '2' %}max-width: 1600px;
+              {%- else %}max-width: 100%;padding-left: 30px;padding-right: 30px;
+              {%- endif -%}
+         }
+        {%- endif -%}
+        {%- if des_w == '3' -%}#wrap_des_pr{%- elsif des_w == '1' -%}#shopify-section-pr_description{%- else -%}.container_des{%- endif -%}{
+            background-color: {{section.settings.bgcl}};
+        }
+     }
+  {%- else -%}
+    .des_pr_layout_2 #shopify-section-pr_description {margin-top: 40px;}@media (max-width: 1024px) {.des_pr_layout_2 .des_style_1.des_mb_2.sp-tab(:first-child) {margin-bottom: 40px;}}
+  {%- endif -%}
+  {%- assign mg = section.settings.mg -%}
+  {%- assign mg_mb = section.settings.mg_mb -%}
+  {%- if mg != blank -%} 
+  #wrap_des_pr {
+     {%- assign arr_mg = mg | remove:' ' | split:',' -%}
+      margin-top: {{arr_mg[0]}} !important;margin-right: {{arr_mg[1]}} !important;margin-bottom: {{arr_mg[2]}} !important;margin-left: {{arr_mg[3]}} !important;
+  }
+  {%- endif -%}
+  {%- if mg_mb != blank-%} 
+  @media only screen and (max-width: 767px) {
+    #wrap_des_pr {
+      {%- assign arr_mg = mg_mb | remove:' ' | split:',' -%}
+      margin-top: {{arr_mg[0]}} !important;margin-right: {{arr_mg[1]}} !important;margin-bottom: {{arr_mg[2]}} !important;margin-left: {{arr_mg[3]}} !important;
+    }
+  }
+  {%- endif -%}
+{%- endstyle -%}
+
+{%- endfor -%}
+
+<script>
+  var product_type = '{{ product.type }}';
+  if(product_type.split('_').length<2){
+  	console.warn('product type 缺失不完整')
+  }
+  console.log(product_type)
+  var list = {
+    "T-Shirts": "Top",
+    "Sneakers": "Shoes",
+    "Skinny-Fit Pants": "Bottom",
+    "Camis": "Top",
+    "Outerwear": "Top",
+    "T-Shirts": "Top",
+    "T-Shirts": "Top",
+    "Shirts": "Top",
+    "Shirts": "Top",
+    "Jeans": "Bottom",
+    "T-Shirts": "Top",
+    "Denim Jumpsuits": "Bottom",
+    "Shirts": "Top",
+    "T-Shirts": "Top",
+    "T-Shirts": "Top",
+    "Outerwear": "Top",
+    "A-Line Skirts": "Bottom",
+    "A-Line Dresses": "Top",
+    "Straight Skirts": "Bottom",
+    "Straight Dresses": "Top",
+    "Balloon Skirts": "Bottom",
+    "Balloon Dresses": "Top",
+    "Skinny-Fit Skirts": "Bottom",
+    "Skinny-Fit Dresses": "Top",
+    "T-Shirts": "Top",
+    "Skater Dresses": "Top",
+    "Backpacks": "Acc",
+    "Overalls & Jumpsuits": "Bottom",
+    "Overalls & Jumpsuits": "Bottom",
+    "Tank Tops": "Top",
+    "Coats": "Top",
+    "Backpacks": "Acc",
+    "Shoulder Bags": "Acc",
+    "Shoulder Bags": "Acc",
+    "Pumps": "Shoes",
+    "Dresses": "Top",
+    "Camis & Cami Tops": "Top",
+    "Ponchos": "Top",
+    "Shorts": "Bottom",
+    "Trench Coats": "Top",
+    "Key Charms": "Acc",
+    "Harem Pants": "Bottom",
+    "Jackets": "Top",
+    "Skinny-Fit Pants": "Bottom",
+    "Shirts": "Top",
+    "Slingbacks": "Shoes",
+    "Face Masks": "Acc",
+    "Wide-Leg Pants": "Bottom",
+    "Flare Pants": "Bottom",
+    "Jumpsuits": "Bottom",
+    "Sandals": "Shoes",
+    "Ties": "Acc",
+    "Carrot Fit Pants": "Bottom",
+    "Vests": "Top",
+    "Polo Shirts": "Top",
+    "Knitted T-Shirts": "Top",
+    "Knitted Skirts": "Bottom",
+    "Knitted Vests": "Top",
+    "Knitted Pants": "Bottom",
+    "Knitted Dresses": "Top",
+    "Knitted Vests": "Top",
+    "Knitted Cardigans": "Top",
+    "Hats": "Acc",
+    "Padded Coats": "Top",
+    "Bandeau": "Top",
+    "Denim T-Shirts":"Top",
+    "Denim Skirts": "Bottom",
+    "Denim Overalls": "Bottom",
+    "Denim Pinafore Dresses": "Top",
+    "Denim Shirts": "Top",
+    "Denim Shorts": "Bottom",
+    "Denim Jumpsuits": "Bottom",
+    "Denim Dresses": "Top",
+    "Denim Vests": "Top",
+    "Denim Jackets": "Top",
+    "Jeans": "Bottom",
+    "Fur Coats": "Top",
+    "Belts": "Acc",
+    "Leather Jackets": "Top",
+    "Shoulder Bags": "Acc",
+    "Shoulder Bags": "Acc",
+    "Handbags": "Acc",
+    "Jewelry": "Acc",
+    "Jogger Pants": "Bottom",
+    "Headwears": "Acc",
+    "Slippers": "Shoes",
+    "Socks": "Acc",
+    "Scarves": "Acc",
+    "Sweatshirts": "Top",
+    "Blazers": "Top",
+    "Backpacks": "Acc",
+    "Clutches": "Acc",
+    "Crossbody Bags": "Acc",
+    "Chest Bags": "Acc",
+    "Denim T-Shirts": "Top",
+    "Denim Skirts": "Bottom",
+    "Denim Overalls": "Bottom",
+    "Denim Pinafore Dresses": "Top",
+    "Denim Shirts": "Top",
+    "Denim Shorts": "Bottom",
+    "Denim Jumpsuits": "Bottom",
+    "Denim Dresses": "Top",
+    "Denim Vests": "Top",
+    "Denim Jackets": "Top",
+    "Jeans": "Bottom",
+    "Boots": "Shoes",
+    "Glasses": "Acc",
+    "Shoulder Pouches": "Acc",
+    "Fishtail Skirts": "Bottom",
+    "Down Outerwear": "Top",
+    "Umbrellas": "Acc",
+    "Sneakers": "Shoes",
+    "Blouses": "Top",
+    "Straight Pants": "Bottom"
+  }
+  let table1 = `
+    <table cellpadding="0" cellspacing="0" border="1" class="sizeTable" style="line-height: 24.0px; font-size: 14px;text-align:center">
+      <tbody>
+      <tr>
+        <td>Size</td>
+        <td>XS</td>
+        <td>S</td>
+        <td>M</td>
+        <td>L</td>
+        <td>XL</td>
+        <td>XXL</td>
+      </tr>
+      <tr>
+        <td>CN</td>
+        <td>170/88A</td>
+        <td>175/92A</td>
+        <td>180/96A</td>
+        <td>180/100A</td>
+        <td>185/104A</td>
+        <td>190/108A</td>
+      </tr>
+      <tr>
+        <td>EUR</td>
+        <td>44</td>
+        <td>46</td>
+        <td>48</td>
+        <td>50</td>
+        <td>52</td>
+        <td>54</td>
+      </tr>
+      <tr>
+        <td>UK</td>
+        <td>34</td>
+        <td>36</td>
+        <td>38</td>
+        <td>40</td>
+        <td>42</td>
+        <td>44</td>
+      </tr>
+      <tr>
+        <td>US</td>
+        <td>34</td>
+        <td>36</td>
+        <td>38</td>
+        <td>40</td>
+        <td>42</td>
+        <td>44</td>
+      </tr>
+      </tbody>
+    </table>
+  `,
+  table2 = `
+    <table cellpadding="0" cellspacing="0" border="1" class="sizeTable" style="line-height: 24.0px; font-size: 14px;text-align:center">
+      <tbody>
+      <tr>
+        <td>Size</td>
+        <td>XS</td>
+        <td>S</td>
+        <td>M</td>
+        <td>L</td>
+        <td>XL</td>
+        <td>XXL</td>
+      </tr>
+      <tr>
+        <td>CN</td>
+        <td>160/80A</td>
+        <td>165/84A</td>
+        <td>170/88A</td>
+        <td>170/92A</td>
+        <td>175/96A</td>
+        <td>180/100A</td>
+      </tr>
+      <tr>
+        <td>EUR</td>
+        <td>34</td>
+        <td>36</td>
+        <td>38</td>
+        <td>40</td>
+        <td>42</td>
+        <td>44</td>
+      </tr>
+      <tr>
+        <td>UK</td>
+        <td>6</td>
+        <td>8</td>
+        <td>10</td>
+        <td>12</td>
+        <td>14</td>
+        <td>16</td>
+      </tr>
+      <tr>
+        <td>US</td>
+        <td>2</td>
+        <td>4</td>
+        <td>6</td>
+        <td>8</td>
+        <td>10</td>
+        <td>12</td>
+      </tr>
+      </tbody>
+    </table>
+  `,
+  table3 = `
+    <table cellpadding="0" cellspacing="0" border="1" class="sizeTable" style="line-height: 24.0px; font-size: 14px;text-align:center">
+      <tbody>
+      <tr>
+        <td>Size</td>
+        <td>XS</td>
+        <td>S</td>
+        <td>M</td>
+        <td>L</td>
+        <td>XL</td>
+        <td>XXL</td>
+      </tr>
+      <tr>
+        <td>CN</td>
+        <td>160/84A</td>
+        <td>165/88A</td>
+        <td>170/92A</td>
+        <td>170/96A</td>
+        <td>175/100A</td>
+        <td>180/104A</td>
+      </tr>
+      <tr>
+        <td>EUR</td>
+        <td>34</td>
+        <td>36</td>
+        <td>38</td>
+        <td>40</td>
+        <td>42</td>
+        <td>44</td>
+      </tr>
+      <tr>
+        <td>UK</td>
+        <td>6</td>
+        <td>8</td>
+        <td>10</td>
+        <td>12</td>
+        <td>14</td>
+        <td>16</td>
+      </tr>
+      <tr>
+        <td>US</td>
+        <td>2</td>
+        <td>4</td>
+        <td>6</td>
+        <td>8</td>
+        <td>10</td>
+        <td>12</td>
+      </tr>
+      </tbody>
+    </table>
+  `,
+  table4 = `
+    <table cellpadding="0" cellspacing="0" border="1" class="sizeTable" style="line-height: 24.0px; font-size: 14px;text-align:center">
+      <tbody>
+      <tr>
+        <td>Size</td>
+        <td>XS</td>
+        <td>S</td>
+        <td>M</td>
+        <td>L</td>
+        <td>XL</td>
+        <td>XXL</td>
+      </tr>
+      <tr>
+        <td>CN</td>
+        <td>170/72A</td>
+        <td>175/76A</td>
+        <td>180/80A</td>
+        <td>180/84A</td>
+        <td>185/88A</td>
+        <td>190/92A</td>
+      </tr>
+      <tr>
+        <td>EUR</td>
+        <td>44</td>
+        <td>46</td>
+        <td>48</td>
+        <td>50</td>
+        <td>52</td>
+        <td>54</td>
+      </tr>
+      <tr>
+        <td>UK</td>
+        <td>29</td>
+        <td>30</td>
+        <td>31</td>
+        <td>32</td>
+        <td>34</td>
+        <td>36</td>
+      </tr>
+      <tr>
+        <td>US</td>
+        <td>29</td>
+        <td>30</td>
+        <td>31</td>
+        <td>32</td>
+        <td>34</td>
+        <td>36</td>
+      </tr>
+      </tbody>
+    </table>
+  `,
+  table5 = `
+    <table cellpadding="0" cellspacing="0" border="1" class="sizeTable" style="line-height: 24.0px; font-size: 14px;text-align:center">
+      <tbody>
+      <tr>
+        <td>Size</td>
+        <td>XXS</td>
+        <td>XS</td>
+        <td>S</td>
+        <td>M</td>
+        <td>L</td>
+        <td>XL</td>
+        <td>XXL</td>
+      </tr>
+      <tr>
+        <td>CN</td>
+        <td>155/58A</td>
+        <td>160/62A</td>
+        <td>165/66A</td>
+        <td>170/70A</td>
+        <td>170/74A</td>
+        <td>175/78A</td>
+        <td>180/82A</td>
+      </tr>
+      <tr>
+        <td>EUR</td>
+        <td>32</td>
+        <td>34</td>
+        <td>36</td>
+        <td>38</td>
+        <td>40</td>
+        <td>42</td>
+        <td>44</td>
+      </tr>
+      <tr>
+        <td>UK</td>
+        <td>4</td>
+        <td>6</td>
+        <td>8</td>
+        <td>10</td>
+        <td>12</td>
+        <td>14</td>
+        <td>16</td>
+      </tr>
+      <tr>
+        <td>US</td>
+        <td>0</td>
+        <td>2</td>
+        <td>4</td>
+        <td>6</td>
+        <td>8</td>
+        <td>10</td>
+        <td>12</td>
+      </tr>
+      </tbody>
+    </table>
+  `,
+  table6 = `
+    <table cellpadding="0" cellspacing="0" border="1" class="sizeTable" style="line-height: 24.0px; font-size: 14px;text-align:center">
+      <tbody>
+      <tr>
+        <td>Size</td>
+        <td>XXS</td>
+        <td>XS</td>
+        <td>S</td>
+        <td>M</td>
+        <td>L</td>
+        <td>XL</td>
+        <td>XXL</td>
+      </tr>
+      <tr>
+        <td>CN</td>
+        <td>155/58A</td>
+        <td>160/62A</td>
+        <td>165/66A</td>
+        <td>170/70A</td>
+        <td>170/74A</td>
+        <td>175/78A</td>
+        <td>180/82A</td>
+      </tr>
+      <tr>
+        <td>EUR</td>
+        <td>32</td>
+        <td>34</td>
+        <td>36</td>
+        <td>38</td>
+        <td>40</td>
+        <td>42</td>
+        <td>44</td>
+      </tr>
+      <tr>
+        <td>UK</td>
+        <td>4</td>
+        <td>6</td>
+        <td>8</td>
+        <td>10</td>
+        <td>12</td>
+        <td>14</td>
+        <td>16</td>
+      </tr>
+      <tr>
+        <td>US</td>
+        <td>0</td>
+        <td>2</td>
+        <td>4</td>
+        <td>6</td>
+        <td>8</td>
+        <td>10</td>
+        <td>12</td>
+      </tr>
+      </tbody>
+    </table>
+  `,
+  table7 = `
+    <table cellpadding="0" cellspacing="0" border="1" class="sizeTable" style="line-height: 24.0px; font-size: 14px;text-align:center">
+      <tbody>
+      <tr>
+        <td>Net Foot Length (Size)</td>
+        <td>240（38#）</td>
+        <td>245（39#）</td>
+        <td>250（40#）</td>
+        <td>255（41#）</td>
+        <td>260（42#）</td>
+        <td>265（43#）</td>
+        <td>270（44#）</td>
+        <td>275（45#）</td>
+        <td>280（46#）</td>
+        <td>285（47#）</td>
+      </tr>
+      <tr>
+        <td>CN</td>
+        <td>240（2.5）</td>
+        <td>245（2.5）</td>
+        <td>250（2.5）</td>
+        <td>255（2.5）</td>
+        <td>260（2.5）</td>
+        <td>265（2.5）</td>
+        <td>270（2.5）</td>
+        <td>275（2.5）</td>
+        <td>280（2.5）</td>
+        <td>285（2.5）</td>
+      </tr>
+      <tr>
+        <td>EUR</td>
+        <td>38</td>
+        <td>38.5</td>
+        <td>39</td>
+        <td>40</td>
+        <td>41</td>
+        <td>41.5</td>
+        <td>42</td>
+        <td>43</td>
+        <td>44</td>
+        <td>44.5</td>
+      </tr>
+      <tr>
+        <td>UK</td>
+        <td>5.5</td>
+        <td>6</td>
+        <td>6.5</td>
+        <td>7</td>
+        <td>7.5</td>
+        <td>8.5</td>
+        <td>9</td>
+        <td>9.5</td>
+        <td>10</td>
+        <td>10.5</td>
+      </tr>
+      <tr>
+        <td>US</td>
+        <td>6.5</td>
+        <td>7</td>
+        <td>7.5</td>
+        <td>8</td>
+        <td>8.5</td>
+        <td>9.5</td>
+        <td>10</td>
+        <td>10.5</td>
+        <td>11</td>
+        <td>11.5</td>
+      </tr>
+      </tbody>
+    </table>
+  `,
+  table8 = `
+    <table cellpadding="0" cellspacing="0" border="1" class="sizeTable" style="line-height: 24.0px; font-size: 14px;text-align:center">
+      <tbody>
+      <tr>
+        <td>Net Foot Length (Size)</td>
+        <td>215（33#）</td>
+        <td>220（34#）</td>
+        <td>225（35#）</td>
+        <td>230（36#）</td>
+        <td>235（37#）</td>
+        <td>240（38#）</td>
+        <td>245（39#）</td>
+        <td>250（40#）</td>
+        <td>255（41#）</td>
+      </tr>
+      <tr>
+        <td>CN</td>
+        <td>215<br />（1.5）</td>
+        <td>220<br />（1.5）</td>
+        <td>225<br />（1.5）</td>
+        <td>230<br />（1.5）</td>
+        <td>235<br />（1.5）</td>
+        <td>240<br />（1.5）</td>
+        <td>245<br />（1.5）</td>
+        <td>250<br />（1.5）</td>
+        <td>255<br />（1.5）</td>
+      </tr>
+      <tr>
+        <td>EUR</td>
+        <td>34</td>
+        <td>35</td>
+        <td>35.5</td>
+        <td>36</td>
+        <td>37</td>
+        <td>38</td>
+        <td>38.5</td>
+        <td>39</td>
+        <td>40</td>
+      </tr>
+      <tr>
+        <td>UK</td>
+        <td>2.5</td>
+        <td>3</td>
+        <td>3.5</td>
+        <td>4</td>
+        <td>4.5</td>
+        <td>5.5</td>
+        <td>6</td>
+        <td>6.5</td>
+        <td>7</td>
+      </tr>
+      <tr>
+        <td>US</td>
+        <td>4.5</td>
+        <td>5</td>
+        <td>5.5</td>
+        <td>6</td>
+        <td>6.5</td>
+        <td>7.5</td>
+        <td>8</td>
+        <td>8.5</td>
+        <td>9</td>
+      </tr>
+      </tbody>
+    </table>
+  `,
+  table9 = `
+    <table cellpadding="0" cellspacing="0" border="1" class="sizeTable" style="line-height: 24.0px; font-size: 14px;text-align:center">
+      <tbody>
+      <tr>
+        <td>CN</td>
+        <td>230（1.5）</td>
+        <td>235（1.5）</td>
+        <td>240（1.5）</td>
+        <td>250（1.5）</td>
+        <td>255（1.5）</td>
+        <td>260（1.5）</td>
+      </tr>
+      <tr>
+        <td>EUR</td>
+        <td>36</td>
+        <td>37</td>
+        <td>38</td>
+        <td>39</td>
+        <td>40</td>
+        <td>41</td>
+      </tr>
+      <tr>
+        <td>UK</td>
+        <td>4</td>
+        <td>4.5</td>
+        <td>5.5</td>
+        <td>6.5</td>
+        <td>7</td>
+        <td>7.5</td>
+      </tr>
+      <tr>
+        <td>US</td>
+        <td>6</td>
+        <td>6.5</td>
+        <td>7.5</td>
+        <td>8.5</td>
+        <td>9</td>
+        <td>9.5</td>
+      </tr>
+      </tbody>
+    </table>
+  `,
+  topTxt = '<div style="margin-top: 20px;margin-bottom: -10px;font-size: 1.1em;line-height: 140%;font-family: NeueMontreal-Regular !important;">*Please notice that this is a guide only and that may have difference vary measurements. If you are not sure about your size, please contact <a style="text-decoration: underline;" href="https://urbanrevivo.com/pages/contact-support">customer service</a></div>',
+  img_man_size = '<h3>How to Measure your body?</h3><img src="https://cdn.shopify.com/s/files/1/0504/7644/9942/files/man_size.jpg?v=1632622748" />',
+  img_women_size = '<h3>How to Measure your body?</h3><img src="https://cdn.shopify.com/s/files/1/0504/7644/9942/files/women_size.jpg?v=1632622748" />',
+  img_shoes_size = '<h3>How to Measure your body?</h3><img src="https://cdn.shopify.com/s/files/1/0504/7644/9942/files/shoes_size.jpg?v=1632622748" />',
+  img_no_size = '<h3>How to Measure your body?</h3><img src="https://cdn.shopify.com/s/files/1/0504/7644/9942/files/no_size.jpg?v=1632622748" />';
+
+  let product_Modal_html = ''
+  let productType = {}
+  productType.Info = product_type.split('_')
+  productType.gender = product_type.split('_')[0]
+  productType.name = product_type.split('_')[1]
+  productType.type = list[product_type.split('_')[1]]
+  productType.seires = ''
+
+  // 根据product的SPU,获取product的seires
+  let divList = document.getElementById('tab_pr_deskl').getElementsByClassName('sp-tab-content')[0].getElementsByTagName('div'),
+  descList = [],
+  productDesc = []
+
+  productDesc = divList[0]
+//   if (productDesc.children&&productDesc.children.length>0) {
+//     // 获取description中的SPU字段
+//     let desc = productDesc.children[0]
+//     for (let i = 0; i < desc.children.length; i++) {
+//       const item = desc.children[i];
+//       if (item.children.length>0&&item.children[0].innerText=='SPU') {
+//         console.log('spu',item.children)
+//         productType.seires = item.children[1].innerText.substring(0,1)
+//       }
+//     }
+//   }
+  
+  // 在handle中获取spu
+  let p_handle_arr = "{{product.handle}}".split('-')
+  productType.spu = p_handle_arr[p_handle_arr.length-1].toLocaleUpperCase()
+  productType.seires = productType.spu.substring(0,1)
+  
+  console.log(productType)
+
+  // 尺码表匹配
+  if (productType.type=='Top') {
+    if (productType.gender=='M') {
+      product_Modal_html = '<div class="tablebox">'+table1+'</div>' + img_man_size
+    }else if (productType.gender=='W'){
+      if (productType.seires=='I'){
+        product_Modal_html ='<div class="tablebox">'+ table3+'</div>' + img_women_size
+      } else {
+        product_Modal_html = '<div class="tablebox">'+table2+'</div>' + img_women_size
+      }
+    }
+  } else if (productType.type=='Bottom') {
+    if (productType.gender=='M') {
+      product_Modal_html = '<div class="tablebox">'+table4+'</div>' + img_man_size
+    }else if (productType.gender=='W'){
+      if (productType.seires=='I'){
+        product_Modal_html = '<div class="tablebox">'+table6 +'</div>'+ img_women_size
+      } else{
+        product_Modal_html = '<div class="tablebox">'+table5+'</div>' + img_women_size
+      }
+    }
+  } else if (productType.type=='Shoes') {
+    if (productType.gender=='M') {
+      product_Modal_html = '<div class="tablebox">'+table7+'</div>' + img_shoes_size
+    } else if (productType.gender=='W') {
+      if (productType.seires=='I'){
+        product_Modal_html ='<div class="tablebox">'+ table9+'</div>' + img_shoes_size
+      } else {
+        product_Modal_html = '<div class="tablebox">'+table8+'</div>' + img_shoes_size
+      }
+    }
+  } else {
+    product_Modal_html = img_no_size
+  }
+
+  let table_t = ''
+//   if(productDesc.children[1]){
+//     table_t = '<div class="table_t"><h3 class="alignCenter">Product Info</h3>'+topTxt +productDesc.children[1].innerHTML +'</div>'
+//   }else{
+//     table_t =  topTxt +table_t 
+//   }
+  product_Modal_html = '<div class="sizeChartPop">'+table_t+'<h3 class="alignCenter">Size Info</h3>'+ product_Modal_html+ '</div>'
+  
+   //从描述中匹配尺码表数据
+  var product_description_content = document.getElementById("tab_pr_deskl").outerHTML,
+      s = product_description_content.indexOf('<table'),
+      e = product_description_content.indexOf('</table>'),
+      tem_table_data = product_description_content.substring(s,e+8),
+      size_chart_in='<tbody>',
+      size_chart_cm='<tbody>';
+  var trList=document.querySelector("#tab_pr_deskl table").rows;
+  
+  for(var i=0;i<trList.length;i++){
+      size_chart_in +='<tr>';
+      size_chart_cm +='<tr>';
+      var tdArr = trList[i].cells;
+      for (var j=0;j<tdArr.length;j++){
+        var data_td=tdArr[j].innerText;
+        if(i>1&&j>0){
+            size_chart_cm += '<td>'+data_td+'</td>';
+            if (i<trList.length-1) {
+              if (productType.type!='Shoes') {
+                size_chart_in += '<td>'+Math.round(parseFloat(data_td)*3.937)/10+'</td>';
+              }else{
+                size_chart_in += '<td>'+data_td+'</td>';
+              }
+            } else {
+              size_chart_in += '<td>'+Math.round(parseFloat(data_td)*3.937)/10+'</td>';
+            }
+
+        }else{
+            if(i==0 || j==0){
+                size_chart_in += '<td style="background-color:#eee;">'+data_td+'</td>';
+                size_chart_cm += '<td style="background-color:#eee;">'+data_td+'</td>';
+            }else{
+                size_chart_in += '<td>'+data_td+'</td>';
+                size_chart_cm += '<td>'+data_td+'</td>';
+            }
+        }
+      }
+      size_chart_in +='</tr>';
+      size_chart_cm +='</tr>';
+    }
+
+    size_chart_in+='</tbody>';
+    size_chart_cm+='</tbody>';
+  
+  if(trList.length>0){
+  	product_Modal_html = "<h3>Product Measurements</h3>"+topTxt +"<div style='text-align:right;'><span id='sizeChart_data_in' class='selected' onclick='changeDataIn()'>INCHES</span> | <span id='sizeChart_data_cm' onclick='changeDataCm()'>CM</span></div><table class='size_chart_cm hide_size_chart'>" + size_chart_cm + "</table><table class='size_chart_in show_size_chart'>" + size_chart_in + "</table>"+product_Modal_html
+  } else{
+    product_Modal_html = "<h3>Product Measurements</h3>"+topTxt +product_Modal_html
+  }
+  
+  var changeDataCm = function(){
+    var changeSizeDataCm = document.getElementById("sizeChart_data_cm");
+		var changeSizeDataIn = document.getElementById("sizeChart_data_in");
+    var size_chart_cm = document.getElementsByClassName('size_chart_cm');
+    var size_chart_in = document.getElementsByClassName('size_chart_in');
+    changeSizeDataCm.classList.add('selected');
+    changeSizeDataIn.classList.remove('selected');
+    size_chart_cm[0].classList.remove('hide_size_chart');
+    size_chart_cm[0].classList.add('show_size_chart');
+    size_chart_in[0].classList.remove('show_size_chart');
+    size_chart_in[0].classList.add('hide_size_chart');
+  }
+  var changeDataIn = function(){
+    var changeSizeDataCm = document.getElementById("sizeChart_data_cm");
+    var changeSizeDataIn = document.getElementById("sizeChart_data_in");
+    var size_chart_cm = document.getElementsByClassName('size_chart_cm');
+    var size_chart_in = document.getElementsByClassName('size_chart_in');
+    changeSizeDataIn.classList.add('selected');
+    changeSizeDataCm.classList.remove('selected');
+    size_chart_in[0].classList.remove('hide_size_chart');
+    size_chart_in[0].classList.add('show_size_chart');
+    size_chart_cm[0].classList.remove('show_size_chart');
+    size_chart_cm[0].classList.add('hide_size_chart');
+  }
+  
+  if(productDesc.children[1]){
+    productDesc.children[1].style.display = 'none'
+  }
+  
+  
+</script>
+
+<style>
+  .show_size_chart{display:block;border-collapse: collapse;width: 100%;border-spacing: 0;overflow-x:auto;}
+  .hide_size_chart{display:none;}
+  .show_size_chart thead,.show_size_chart tbody,.show_size_chart tr,.show_size_chart td{width:100%;text-align: center;}
+  .mfp-with-anim.white-popup.ajax_pp_popup.ps_ajax_pp_js img{width:100%;}
+  .mfp-with-anim.white-popup.ajax_pp_popup.ps_ajax_pp_js h3{text-align:center;margin:30px 0 20px;}
+  .mfp-with-anim.white-popup.ajax_pp_popup.ps_ajax_pp_js span{cursor: pointer; color: rgb(120, 130, 140);}
+  .mfp-with-anim.white-popup.ajax_pp_popup.ps_ajax_pp_js span.selected{color: rgb(29, 30, 31);}
+  .sizeTable{
+    width: 100%;
+  }
+  .tablebox{
+  	overflow-x: auto;
+  }
+  .sizeTable td{
+    text-align: center;
+  }
+  .ps_ajax_pp_js h3{
+    font-family: 'NeueMontreal-Regular' !important
+  }
+</style>
+
+{%- schema -%} 
+  {
+    "name": "Tab Descriptions",
+    "class": "shopify-tabs sp-tabs nt_section",
+    "settings": [ 
+      /*{
+        "type": "paragraph",
+        "content": "Custom Metafields (namespace: additions)"
+      },*/
+      {
+        "type": "checkbox",
+        "id": "show",
+        "label": "Show Tab Descriptions?",
+        "default": true
+      },
+      {
+        "type": "color",
+        "id": "bgcl",
+        "label": "Background Color",
+        "info": "Not working when enable description sidebar",
+        "default": "#fff"
+      },
+      {
+        "type": "color",
+        "id": "bgclmb",
+        "label": "Background Color (mobile)",
+        "info": "Not working when enable description sidebar",
+        "default": "#fff"
+      },
+      {
+        "type": "select",
+        "id": "des_w",
+        "default": "1",
+        "info": "Not working when enable description sidebar",
+        "options": [
+          {
+            "value": "1",
+            "label": "Default"
+          },
+          {
+            "value": "2",
+            "label": "Wide (1600px)"
+          },
+          {
+            "value": "3",
+            "label": "full Width"
+          },
+          {
+            "value": "4",
+            "label": "Content full Width"
+          }
+        ],
+        "label": "Description Layout"
+      },
+      {
+        "type": "select",
+        "id": "des_mb",
+        "label": "Description design mobile",
+        "info": "Only working in Product Tab Description",
+        "default": "2",
+        "options": [
+          {
+            "value": "1","label": "Design 1"
+          },
+          {
+            "value": "2","label": "Design 2"
+          }
+        ]
+      },  
+      {
+      "type": "checkbox",
+      "id": "auto",
+      "label": "Enable auto open?",
+      "info": "Only working in Product Tab Accordions",
+      "default": true
+      },
+      {
+        "type": "text",
+        "id": "mg",
+        "label": "Margin",
+        "default": "30px,,30px,",
+        "placeholder": "30px,,30px,"
+      },
+      {
+        "type": "text",
+        "id": "mg_mb",
+        "label": "Margin Mobile",
+        "default": "0,,0,",
+        "placeholder": "0,,0,"
+      }
+    ],
+    "blocks": [
+      {
+        "type": "des",
+        "name": "Description",
+        "limit": 1,
+        "settings": [
+          {
+            "type": "text",
+            "id": "title",
+            "label": "Heading",
+            "default": "Description"
+          }
+        ]
+      },
+      {
+        "type": "buy",
+        "name": "Bought Together",
+        "limit": 1,
+        "settings": [
+          {
+            "type": "paragraph",
+            "content": "Only active when enable Frequently Bought Together on inside description."
+          },
+          {
+            "type": "text",
+            "id": "title",
+            "label": "Heading",
+            "default": "Frequently Bought Together"
+          },
+          {
+            "type": "paragraph",
+            "content": "[Tutorials Doc](https://kalles-docs.the4.co/features/bundle#config-bundle-from-kalles-1-1)"
+          }/*,
+          {
+            "type": "paragraph",
+            "content": "[Tutorials Video](https://kalles-docs.the4.co/features/bundle#config-bundle-from-kalles-1-1)"
+          }*/
+        ]
+      },
+      {
+        "type": "add",
+        "name": "Additional Information",
+        "limit": 1,
+        "settings": [
+          {
+            "type": "text",
+            "id": "title",
+            "label": "Heading",
+            "default": "Additional Information"
+          }
+        ]
+      },
+      {
+        "type": "rivui",
+        "name": "Review",
+        "limit": 1,
+        "settings": [
+          {
+            "type": "text",
+            "id": "title",
+            "label": "Heading",
+            "default": "Reviews"
+          }
+        ]
+      },
+      /*{
+        "type": "shipping",
+        "name": "shipping Information",
+        "limit": 1,
+        "settings": [
+          {
+            "type": "text",
+            "id": "title",
+            "label": "Heading",
+            "default": "shipping"
+          }
+        ]
+      },*/
+      {
+        "type": "html",
+        "name": "Custom HTML",
+        "settings": [
+         {
+            "type": "text",
+            "id": "title",
+            "label": "Heading",
+            "default": "Custom tab"
+          },
+          {
+            "type": "page",
+            "id": "page",
+            "label": "Tab content",
+            "info": "This page content will appear in the extra tab."
+          }
+        ]
+      },
+      {
+        "type": "tag_pr",
+        "name": "Product tag tab",
+        "settings": [
+         {
+            "type": "paragraph",
+            "content": "Only show this tab when product has tag 'tabt4_Tab Name'."
+          },
+         {
+            "type": "text",
+            "id": "title",
+            "label": "Heading",
+            "default": "Tab Name"
+          },
+          {
+            "type": "page",
+            "id": "page",
+            "label": "Tab content",
+            "info": "This page content will appear in the extra tab."
+          }
+        ]
+      },
+      {
+        "type": "size_pr",
+        "limit": 1,
+        "name": "Product type - Size guide",
+        "settings": [
+         {
+            "type": "paragraph",
+            "content": "Only show this tab when page has title 'Size The4 Name'. Name: product type"
+          },
+         {
+            "type": "paragraph",
+            "content": "This page content will appear in the extra tab."
+          },
+         {
+            "type": "text",
+            "id": "title",
+            "label": "Heading",
+            "default": "Size guide"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "name": "Text",
+        "settings": [
+            {
+            "type": "text",
+            "id": "title",
+            "label": "Heading",
+            "default": "Talk about your brand"
+            },
+            {
+            "type": "richtext",
+            "id": "text",
+            "label": "Text",
+            "default": "<p>Use this text to share information about your brand with your customers. Describe a product, share announcements, or welcome customers to your store.</p>"
+            }
+         ]
+      },
+      {
+        "type": "cus_tab_1","name": "Metafield - Tab #1","limit": 1
+      },
+      {
+        "type": "cus_tab_2","name": "Metafield - Tab #2","limit": 1
+      },
+      {
+        "type": "cus_tab_3","name": "Metafield - Tab #3","limit": 1
+      },
+      {
+        "type": "cus_tab_4","name": "Metafield - Tab #4","limit": 1
+      },
+      {
+        "type": "cus_tab_5","name": "Metafield - Tab #5","limit": 1
+      }
+    ],
+    "default": {
+      "blocks": [
+        { "type": "des" },{ "type": "add" },{ "type": "rivui" }
+      ]
+    }
+  }
+{% endschema %}
